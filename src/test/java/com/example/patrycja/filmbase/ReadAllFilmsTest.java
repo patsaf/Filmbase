@@ -1,5 +1,6 @@
 package com.example.patrycja.filmbase;
 
+import com.example.patrycja.filmbase.DTO.FilmDTO;
 import com.example.patrycja.filmbase.model.Film;
 import com.example.patrycja.filmbase.request.AddFilmRequest;
 import com.example.patrycja.filmbase.template.FillBaseTemplate;
@@ -29,16 +30,16 @@ public class ReadAllFilmsTest extends FillBaseTemplate {
 
     @Test
     public void checkIfReponseContainsAddedFilms() {
-        ResponseEntity<Film[]> responseEntity = restTemplate.getForEntity("/films", Film[].class);
+        ResponseEntity<FilmDTO[]> responseEntity = restTemplate.getForEntity("/films", FilmDTO[].class);
         assertThat(responseEntity
                 .getStatusCode())
                 .isEqualTo(HttpStatus.OK);
 
-        List<Film> responseFilms = Arrays.asList(responseEntity.getBody());
+        List<FilmDTO> responseFilms = Arrays.asList(responseEntity.getBody());
         for(AddFilmRequest filmRequest : createdRequests) {
             assertTrue(responseFilms
                     .stream()
-                    .anyMatch(film -> film.checkIfContentEquals(filmRequest.getFilm())));
+                    .anyMatch(film -> film.checkIfContentEquals(filmRequest.getDTO())));
         }
     }
 

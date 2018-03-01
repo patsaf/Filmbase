@@ -1,5 +1,6 @@
 package com.example.patrycja.filmbase;
 
+import com.example.patrycja.filmbase.DTO.FilmDTO;
 import com.example.patrycja.filmbase.model.Film;
 import com.example.patrycja.filmbase.template.FillBaseTemplate;
 import org.junit.Before;
@@ -26,16 +27,16 @@ public class ReadOneFilmTest extends FillBaseTemplate {
     @Test
     public void checkIfResponseContainsFilmWithGivenId() {
         for(int i=1; i<=requestGenerator.getCount(); i++) {
-            ResponseEntity<Film> responseEntity = restTemplate.getForEntity("/films/{id}", Film.class, i);
+            ResponseEntity<FilmDTO> responseEntity = restTemplate.getForEntity("/films/{id}", FilmDTO.class, i);
             assertThat(responseEntity
                     .getStatusCode())
                     .isEqualTo(HttpStatus.OK);
 
-            Film responseFilm = responseEntity.getBody();
+            FilmDTO responseFilm = responseEntity.getBody();
             assertTrue(responseFilm
                     .checkIfContentEquals(requestGenerator
-                            .getRequest(i-1)
-                            .getFilm()
+                                    .getRequest(i-1)
+                                    .getDTO()
                     ));
         }
     }

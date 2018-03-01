@@ -26,6 +26,8 @@ repositories {
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
 	compile('org.springframework.boot:spring-boot-starter-web')
-	runtime('com.h2database:h2')
+	runtime('mysql:mysql-connector-java')
+	compile('org.hibernate:hibernate-java8')
+	compile group: 'com.monitorjbl', name: 'json-view', version: '0.8'
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }

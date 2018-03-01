@@ -1,5 +1,6 @@
 package com.example.patrycja.filmbase.service;
 
+import com.example.patrycja.filmbase.model.Director;
 import com.example.patrycja.filmbase.request.AddFilmRequest;
 import org.springframework.stereotype.Service;
 
@@ -24,14 +25,15 @@ public class RequestGenerator {
                     .split("; ");
             List<String> typeList = Arrays
                     .asList(
-                            content[2]
+                            content[3]
                                     .split(", "));
 
             requestList.add(new AddFilmRequest(
                     content[0],
-                    content[1],
                     typeList,
-                    Integer.parseInt(content[3])
+                    Integer.parseInt(content[4]),
+                    content[1],
+                    content[2]
             ));
         }
 

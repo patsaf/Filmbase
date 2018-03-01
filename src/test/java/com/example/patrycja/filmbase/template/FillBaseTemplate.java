@@ -26,6 +26,6 @@ public class FillBaseTemplate {
 
     protected void postFilms() {
         createdRequests
-                .forEach(filmRequest -> restTemplate.postForObject("/films", filmRequest, Object.class));
+                .forEach(filmRequest -> restTemplate.postForEntity("/films", filmRequest, Object.class));
     }
 }

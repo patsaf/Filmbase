@@ -1,9 +1,12 @@
 package com.example.patrycja.filmbase.model;
 
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class Film {
 
     @Id
@@ -11,7 +14,10 @@ public class Film {
     private long id;
 
     private String title;
-    private String director;
+
+    @ManyToOne
+    @JoinColumn(name = "id_director")
+    private Director director;
 
     @ElementCollection
     private List<String> types;
@@ -20,7 +26,7 @@ public class Film {
 
     public Film() {}
 
-    public Film(String title, String director, List<String> types, int productionYear) {
+    public Film(String title, Director director, List<String> types, int productionYear) {
         this.title = title;
         this.director = director;
         this.types = types;
@@ -43,11 +49,11 @@ public class Film {
         this.title = title;
     }
 
-    public String getDirector() {
+    public Director getDirector() {
         return director;
     }
 
-    public void setDirector(String director) {
+    public void setDirector(Director director) {
         this.director = director;
     }
 
@@ -69,7 +75,7 @@ public class Film {
 
     public Boolean checkIfContentEquals(Film film) {
         if(title.equals(film.getTitle()) &&
-                director.equals(film.getDirector()) &&
+                director.checkIfDataEquals(film.getDirector()) &&
                 types.equals(film.getTypes()) &&
                 productionYear == film.getProductionYear()) {
             return true;

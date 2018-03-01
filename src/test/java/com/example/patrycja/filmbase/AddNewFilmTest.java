@@ -26,7 +26,8 @@ public class AddNewFilmTest {
     @Before
     public void init() {
         String[] types = {"Crime", "Drama", "Thriller"};
-        filmRequest = new AddFilmRequest("Leon", "Luc Besson", Arrays.asList(types), 1994);
+        filmRequest = new AddFilmRequest("Leon", Arrays.asList(types), 1994,
+                "Luc", "Besson");
     }
 
     @Test
