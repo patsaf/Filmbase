@@ -1,5 +1,6 @@
 package com.example.patrycja.filmbase.controller;
 
+import com.example.patrycja.filmbase.DTO.ActorDTO;
 import com.example.patrycja.filmbase.DTO.FilmDTO;
 import com.example.patrycja.filmbase.exception.DuplicateException;
 import com.example.patrycja.filmbase.model.Actor;
@@ -51,12 +52,10 @@ public class FilmController {
                 Actor actor = actorRepository.findByFirstNameAndLastName(
                         cast.get(j).getFirstName(),
                         cast.get(j).getLastName());
-
                 if(actor==null) {
                     actorRepository.save(cast.get(j));
                 }
             }
-
             filmRepository.save(filmGenerator.getFilm(i));
         }
     }
@@ -121,8 +120,49 @@ public class FilmController {
                 throw new DuplicateException("Film already exists!");
             }
         }
-
         filmRepository.save(newFilm);
         return new FilmDTO(newFilm);
+    }
+
+    @GetMapping("/films/{id}/cast")
+    public List<ActorDTO> getFilmCast(@PathVariable("id") long id) {
+        Film film = filmRepository.findById(id);
+        List<ActorDTO> actorDTOS = new ArrayList<>();
+        for(Actor actor : film.getCast()) {
+            actorDTOS.add(new ActorDTO(actor));
+        }
+        return actorDTOS;
+    }
+
+    @PostMapping("/films/{id}/cast")
+    public List<ActorDTO> addActorToCast(@Valid @RequestBody AddActorRequest actorRequest,
+                                         @PathVariable("id") long id) {
+        Film film = filmRepository.findById(id);
+        Actor actor = actorRepository.findByFirstNameAndLastName(
+                actorRequest.getFirstName(),
+                actorRequest.getLastName());
+        Actor finalActor = actor;
+        if(actor == null) {
+            List<Film> films = new ArrayList<>();
+            films.add(film);
+            actor = new Actor(actorRequest.getFirstName(),
+                    actorRequest.getLastName(),
+                    actorRequest.getDateOfBirth(),
+                    films);
+        } else if(film.getCast()
+                    .stream()
+                    .anyMatch(oldActor -> oldActor.getFirstName().equals(finalActor.getFirstName()) &&
+                    oldActor.getLastName().equals(finalActor.getLastName()))){
+                throw new DuplicateException("Actor already in cast!");
+        }
+        actorRepository.save(actor);
+        List<Actor> cast = film.getCast();
+        cast.add(actor);
+        filmRepository.save(film);
+        List<ActorDTO> actorDTOS = new ArrayList<>();
+        for(Actor actor1 : cast) {
+            actorDTOS.add(new ActorDTO(actor1));
+        }
+        return actorDTOS;
     }
 }

@@ -1,5 +1,6 @@
 package com.example.patrycja.filmbase;
 
+import com.example.patrycja.filmbase.DTO.FilmBriefDTO;
 import com.example.patrycja.filmbase.request.AddActorRequest;
 import com.example.patrycja.filmbase.request.AddFilmRequest;
 import com.example.patrycja.filmbase.request.UpdateDateOfBirthRequest;
@@ -29,7 +30,13 @@ public class ErrorTest {
 
     private AddFilmRequest invalidRequest;
     private AddFilmRequest duplicateRequest;
+
     private UpdateDateOfBirthRequest updateRequest;
+
+    private AddActorRequest actorRequest;
+    private AddActorRequest invalidActorRequest;
+    private AddActorRequest existingRequest;
+    private AddActorRequest nonExistingFilmRequest;
 
     @Before
     public void init() {
@@ -55,12 +62,36 @@ public class ErrorTest {
 
         updateRequest = new UpdateDateOfBirthRequest(
                 LocalDate.of(1978, Month.JANUARY, 13));
+
+        List<FilmBriefDTO> validList = new ArrayList<>();
+        List<FilmBriefDTO> invalidList = new ArrayList<>();
+        FilmBriefDTO film1 = new FilmBriefDTO();
+        film1.setTitle("Leon");
+        film1.setProductionYear(1994);
+        FilmBriefDTO film2 = new FilmBriefDTO();
+        film2.setTitle("Cinderella");
+        film2.setProductionYear(2015);
+        validList.add(film1);
+        invalidList.add(film1);
+        invalidList.add(film2);
+
+        actorRequest = new AddActorRequest("Laurie", "Metcalf",
+                validList, LocalDate.of(1955, Month.MAY, 26));
+        invalidActorRequest = new AddActorRequest(null, "Bohnam-Carter");
+        existingRequest = new AddActorRequest("Colin", "Firth");
+        nonExistingFilmRequest = new AddActorRequest("Helena", "Bohnam-Carter",
+                invalidList, LocalDate.of(1965, Month.MAY, 26));
     }
 
     @Test
     public void rejectRequestWithInvalidData() {
         ResponseEntity<Object> responseEntity = restTemplate.postForEntity("/films", invalidRequest, Object.class);
         assertThat(responseEntity.getStatusCode())
+                .isEqualTo(HttpStatus.BAD_REQUEST);
+
+        ResponseEntity<Object> responseEntityActor = restTemplate.postForEntity("/actors", invalidActorRequest,
+                Object.class);
+        assertThat(responseEntityActor.getStatusCode())
                 .isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
@@ -71,23 +102,47 @@ public class ErrorTest {
         assertThat(responseEntity.getStatusCode())
                 .isEqualTo(HttpStatus.NOT_FOUND);
 
-        ResponseEntity<Object> directorResponseEntity = restTemplate.getForEntity("/directors/{id}", Object.class, id);
+        ResponseEntity<Object> directorResponseEntity = restTemplate.getForEntity("/directors/{id}",
+                Object.class, id);
         assertThat(directorResponseEntity.getStatusCode())
                 .isEqualTo(HttpStatus.NOT_FOUND);
 
-        ResponseEntity<Object> actorResponseEntity = restTemplate.getForEntity("/actors/{id}", Object.class, id);
+        ResponseEntity<Object> actorResponseEntity = restTemplate.getForEntity("/actors/{id}",
+                Object.class, id);
         assertThat(actorResponseEntity.getStatusCode())
                 .isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
     public void rejectDuplicateRequest() {
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity("/films", duplicateRequest, String.class);
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity("/films",
+                duplicateRequest, String.class);
         assertThat(responseEntity.getStatusCode())
                 .isEqualTo(HttpStatus.CREATED);
 
-        ResponseEntity<String> duplicateEntity = restTemplate.postForEntity("/films", duplicateRequest, String.class);
+        ResponseEntity<String> duplicateEntity = restTemplate.postForEntity("/films",
+                duplicateRequest, String.class);
         assertThat(duplicateEntity.getStatusCode())
+                .isEqualTo(HttpStatus.CONFLICT);
+
+        ResponseEntity<String> responseEntityActor = restTemplate.postForEntity("/actors",
+                actorRequest, String.class);
+        assertThat(responseEntityActor.getStatusCode())
+                .isEqualTo(HttpStatus.CREATED);
+
+        ResponseEntity<String> duplicateEntityActor = restTemplate.postForEntity("/actors",
+                actorRequest, String.class);
+        assertThat(duplicateEntityActor.getStatusCode())
+                .isEqualTo(HttpStatus.CONFLICT);
+
+        ResponseEntity<String> existingActorEntity = restTemplate.postForEntity("/films/{id}/cast",
+                existingRequest, String.class, 1);
+        assertThat(existingActorEntity.getStatusCode())
+                .isEqualTo(HttpStatus.OK);
+
+        ResponseEntity<String> existingActorEntityDuplicate = restTemplate.postForEntity("/films/{id}/cast",
+                existingRequest, String.class, 1);
+        assertThat(existingActorEntityDuplicate.getStatusCode())
                 .isEqualTo(HttpStatus.CONFLICT);
     }
 
@@ -114,7 +169,7 @@ public class ErrorTest {
                 updateRequest,
                 String.class,
                 1);
-        assertThat(responseEntity.getStatusCode())
+        assertThat(responseEntityActor.getStatusCode())
                 .isEqualTo(HttpStatus.OK);
 
         ResponseEntity<String> duplicateResponseActor = restTemplate.postForEntity(
@@ -122,7 +177,15 @@ public class ErrorTest {
                 updateRequest,
                 String.class,
                 1);
-        assertThat(duplicateResponse.getStatusCode())
+        assertThat(duplicateResponseActor.getStatusCode())
                 .isEqualTo(HttpStatus.CONFLICT);
+    }
+
+    @Test
+    public void rejectActorWithNonExistingFilm() {
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity("/actors",
+                nonExistingFilmRequest, String.class);
+        assertThat(responseEntity.getStatusCode())
+                .isEqualTo(HttpStatus.NOT_FOUND);
     }
 }
