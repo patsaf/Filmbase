@@ -1,7 +1,8 @@
 package com.example.patrycja.filmbase;
 
-import com.example.patrycja.filmbase.exception.DirectorAlreadyUpToDateException;
+import com.example.patrycja.filmbase.exception.AlreadyUpToDateException;
 import com.example.patrycja.filmbase.exception.DuplicateException;
+import com.example.patrycja.filmbase.exception.FilmDoesntExistException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -17,8 +18,13 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(value = DirectorAlreadyUpToDateException.class)
-    public ResponseEntity<String> handeDirectorUpToDate(DirectorAlreadyUpToDateException ex, WebRequest request) {
+    @ExceptionHandler(value = AlreadyUpToDateException.class)
+    public ResponseEntity<String> handleDirectorUpToDate(AlreadyUpToDateException ex, WebRequest request) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(value = FilmDoesntExistException.class)
+    public ResponseEntity<String> handleNonExistentFilm(FilmDoesntExistException ex, WebRequest request) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

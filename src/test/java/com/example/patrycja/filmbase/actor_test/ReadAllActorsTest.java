@@ -1,8 +1,8 @@
-package com.example.patrycja.filmbase.director_test;
+package com.example.patrycja.filmbase.actor_test;
 
+import com.example.patrycja.filmbase.DTO.ActorDTO;
 import com.example.patrycja.filmbase.DTO.DirectorDTO;
-import com.example.patrycja.filmbase.DTO.FilmDTO;
-import com.example.patrycja.filmbase.model.Director;
+import com.example.patrycja.filmbase.request.AddActorRequest;
 import com.example.patrycja.filmbase.request.AddFilmRequest;
 import com.example.patrycja.filmbase.template.FillBaseTemplate;
 import org.junit.Before;
@@ -21,7 +21,7 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ReadAllDirectorsTest extends FillBaseTemplate {
+public class ReadAllActorsTest extends FillBaseTemplate {
 
     @Before
     public void init() {
@@ -30,19 +30,20 @@ public class ReadAllDirectorsTest extends FillBaseTemplate {
     }
 
     @Test
-    public void checkIfReponseContainsAddedDirectors() {
-        ResponseEntity<DirectorDTO[]> responseEntity = restTemplate.getForEntity("/directors", DirectorDTO[].class);
+    public void checkIfReponseContainsAddedActors() {
+        ResponseEntity<ActorDTO[]> responseEntity = restTemplate.getForEntity("/actors", ActorDTO[].class);
         assertThat(responseEntity
                 .getStatusCode())
                 .isEqualTo(HttpStatus.OK);
 
-        List<DirectorDTO> responseFilms = Arrays.asList(responseEntity.getBody());
+        List<ActorDTO> responseActors = Arrays.asList(responseEntity.getBody());
         for(AddFilmRequest filmRequest : createdRequests) {
-            assertTrue(responseFilms
-                    .stream()
-                    .anyMatch(film -> film.getFirstName().equals(filmRequest.getDirectorFirstName()) &&
-                    film.getLastName().equals(filmRequest.getDirectorLastName())));
+            for(AddActorRequest actorRequest : filmRequest.getActorRequests()) {
+                assertTrue(responseActors
+                        .stream()
+                        .anyMatch(actor -> actor.getFirstName().equals(actorRequest.getFirstName()) &&
+                                actor.getLastName().equals(actorRequest.getLastName())));
+            }
         }
     }
-
 }

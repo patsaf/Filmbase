@@ -1,7 +1,7 @@
 package com.example.patrycja.filmbase.controller;
 
 import com.example.patrycja.filmbase.DTO.DirectorDTO;
-import com.example.patrycja.filmbase.exception.DirectorAlreadyUpToDateException;
+import com.example.patrycja.filmbase.exception.AlreadyUpToDateException;
 import com.example.patrycja.filmbase.model.Director;
 import com.example.patrycja.filmbase.repository.DirectorRepository;
 import com.example.patrycja.filmbase.repository.FilmRepository;
@@ -49,7 +49,7 @@ public class DirectorController {
                                       @PathVariable("id") long id) {
         Director director = directorRepository.findById(id);
         if(director.getDateOfBirth()!=null) {
-            throw new DirectorAlreadyUpToDateException("All director's data is up to date!");
+            throw new AlreadyUpToDateException("All director's data is up to date!");
         }
         Director updatedDirector = new Director(
                 director.getFirstName(),
@@ -58,6 +58,8 @@ public class DirectorController {
                 director.getFilms()
         );
         directorRepository.setDateOfBirthById(dateOfBirthRequest.getDateOfBirth(), id);
-        return new DirectorDTO(updatedDirector);
+        DirectorDTO directorDTO = new DirectorDTO(updatedDirector);
+        directorDTO.setId(id);
+        return directorDTO;
     }
 }

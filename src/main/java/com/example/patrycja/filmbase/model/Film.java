@@ -22,6 +22,9 @@ public class Film {
     @ElementCollection
     private List<String> types;
 
+    @ManyToMany
+    private List<Actor> cast;
+
     private int productionYear;
 
     public Film() {}
@@ -33,12 +36,24 @@ public class Film {
         this.productionYear = productionYear;
     }
 
+    public Film(String title, Director director, List<String> types, int productionYear, List<Actor> cast) {
+        this.title = title;
+        this.director = director;
+        this.types = types;
+        this.productionYear = productionYear;
+        this.cast = cast;
+    }
+
     public long getId() {
         return id;
     }
 
     public String getTitle() {
         return title;
+    }
+
+    public List<Actor> getCast() {
+        return cast;
     }
 
     public Director getDirector() {

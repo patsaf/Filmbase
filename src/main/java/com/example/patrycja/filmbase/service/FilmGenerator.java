@@ -1,5 +1,6 @@
 package com.example.patrycja.filmbase.service;
 
+import com.example.patrycja.filmbase.model.Actor;
 import com.example.patrycja.filmbase.model.Director;
 import com.example.patrycja.filmbase.model.Film;
 import org.springframework.stereotype.Service;
@@ -28,11 +29,19 @@ public class FilmGenerator {
                             content[3]
                                     .split(", "));
 
+            String[] fullNames = content[5].split(", ");
+            List<Actor> cast = new ArrayList<>();
+            for(String name : fullNames) {
+                String[] separatedNames = name.split("_");
+                cast.add(new Actor(separatedNames[0], separatedNames[1]));
+            }
+
            filmList.add(new Film(
                     content[0],
                     new Director(content[1], content[2]),
                     typeList,
-                    Integer.parseInt(content[4])
+                    Integer.parseInt(content[4]),
+                    cast
             ));
         }
 

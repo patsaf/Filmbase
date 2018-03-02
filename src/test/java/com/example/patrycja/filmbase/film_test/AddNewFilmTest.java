@@ -1,5 +1,6 @@
 package com.example.patrycja.filmbase.film_test;
 
+import com.example.patrycja.filmbase.request.AddActorRequest;
 import com.example.patrycja.filmbase.request.AddFilmRequest;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,7 +12,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -25,9 +29,11 @@ public class AddNewFilmTest {
 
     @Before
     public void init() {
+        List<AddActorRequest> actorRequests = new ArrayList<>();
+        actorRequests.add(new AddActorRequest("Jean", "Reno"));
         String[] types = {"Crime", "Drama", "Thriller"};
         filmRequest = new AddFilmRequest("Leon", Arrays.asList(types), 1994,
-                "Luc", "Besson");
+                "Luc", "Besson", actorRequests);
     }
 
     @Test

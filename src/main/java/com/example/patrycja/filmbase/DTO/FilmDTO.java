@@ -1,7 +1,9 @@
 package com.example.patrycja.filmbase.DTO;
 
+import com.example.patrycja.filmbase.model.Actor;
 import com.example.patrycja.filmbase.model.Film;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FilmDTO {
@@ -11,6 +13,7 @@ public class FilmDTO {
     private String director;
     private List<String> types;
     private int productionYear;
+    private List<String> cast;
 
     public FilmDTO() {}
 
@@ -20,6 +23,10 @@ public class FilmDTO {
         this.director = film.getDirector().getFirstName() + " " + film.getDirector().getLastName();
         this.types = film.getTypes();
         this.productionYear = film.getProductionYear();
+        cast = new ArrayList<>();
+        for(Actor actor : film.getCast()) {
+            cast.add(actor.getFirstName() + " " + actor.getLastName());
+        }
     }
 
     public long getId() {
@@ -60,10 +67,15 @@ public class FilmDTO {
         this.productionYear = productionYear;
     }
 
+    public List<String> getCast() { return cast; }
+
+    public void setCast(List<String> cast) { this.cast = cast; }
+
     public Boolean checkIfContentEquals(FilmDTO filmDTO) {
         if(title.equals(filmDTO.getTitle()) &&
                 director.equals(filmDTO.getDirector()) &&
                 types.equals(filmDTO.getTypes()) &&
+                cast.equals(filmDTO.getCast()) &&
                 productionYear == filmDTO.getProductionYear()) {
             return true;
         }
