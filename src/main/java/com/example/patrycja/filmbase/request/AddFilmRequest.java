@@ -1,5 +1,6 @@
 package com.example.patrycja.filmbase.request;
 
+import com.example.patrycja.filmbase.DTO.DirectorDTO;
 import com.example.patrycja.filmbase.DTO.FilmDTO;
 import com.example.patrycja.filmbase.model.Director;
 import com.example.patrycja.filmbase.model.Film;

@@ -1,4 +1,4 @@
-package com.example.patrycja.filmbase;
+package com.example.patrycja.filmbase.film_test;
 
 import com.example.patrycja.filmbase.request.AddFilmRequest;
 import org.junit.Before;

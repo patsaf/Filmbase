@@ -37,40 +37,20 @@ public class Film {
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
     public String getTitle() {
         return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public Director getDirector() {
         return director;
     }
 
-    public void setDirector(Director director) {
-        this.director = director;
-    }
-
     public List<String> getTypes() {
         return types;
     }
 
-    public void setType(List<String> types) {
-        this.types = types;
-    }
-
     public int getProductionYear() {
         return productionYear;
-    }
-
-    public void setProductionYear(int productionYear) {
-        this.productionYear = productionYear;
     }
 
     public Boolean checkIfContentEquals(Film film) {

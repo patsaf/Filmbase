@@ -7,12 +7,14 @@ import com.example.patrycja.filmbase.repository.DirectorRepository;
 import com.example.patrycja.filmbase.request.AddFilmRequest;
 import com.example.patrycja.filmbase.model.Film;
 import com.example.patrycja.filmbase.repository.FilmRepository;
+import com.example.patrycja.filmbase.service.FilmGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,23 +28,27 @@ public class FilmController {
     @Autowired
     DirectorRepository directorRepository;
 
-    /*@PostConstruct
+    @PostConstruct
     public void initialize() {
         FilmGenerator filmGenerator = new FilmGenerator();
         for(int i=0; i<filmGenerator.getCount(); i++) {
+            Director director = directorRepository.findByFirstNameAndLastName(
+                    filmGenerator.getFilm(i).getDirector().getFirstName(),
+                    filmGenerator.getFilm(i).getDirector().getLastName());
+
+            if(director==null) {
+                directorRepository.save(filmGenerator.getFilm(i).getDirector());
+            }
             filmRepository.save(filmGenerator.getFilm(i));
         }
-    }*/
+    }
 
     @GetMapping("/films")
     public List<FilmDTO> getAllFilms() {
-        List<Film> allFilms = filmRepository.findAll();
-
         List<FilmDTO> allDTOs = new ArrayList<>();
-        for(Film film : allFilms) {
+        for(Film film : filmRepository.findAll()) {
             allDTOs.add(new FilmDTO(film));
         }
-
         return allDTOs;
     }
 

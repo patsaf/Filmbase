@@ -1,7 +1,6 @@
-package com.example.patrycja.filmbase;
+package com.example.patrycja.filmbase.film_test;
 
 import com.example.patrycja.filmbase.DTO.FilmDTO;
-import com.example.patrycja.filmbase.model.Film;
 import com.example.patrycja.filmbase.template.FillBaseTemplate;
 import org.junit.Before;
 import org.junit.Test;

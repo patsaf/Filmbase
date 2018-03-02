@@ -1,7 +1,8 @@
-package com.example.patrycja.filmbase;
+package com.example.patrycja.filmbase.director_test;
 
+import com.example.patrycja.filmbase.DTO.DirectorDTO;
 import com.example.patrycja.filmbase.DTO.FilmDTO;
-import com.example.patrycja.filmbase.model.Film;
+import com.example.patrycja.filmbase.model.Director;
 import com.example.patrycja.filmbase.request.AddFilmRequest;
 import com.example.patrycja.filmbase.template.FillBaseTemplate;
 import org.junit.Before;
@@ -20,7 +21,7 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ReadAllFilmsTest extends FillBaseTemplate {
+public class ReadAllDirectorsTest extends FillBaseTemplate {
 
     @Before
     public void init() {
@@ -29,17 +30,18 @@ public class ReadAllFilmsTest extends FillBaseTemplate {
     }
 
     @Test
-    public void checkIfReponseContainsAddedFilms() {
-        ResponseEntity<FilmDTO[]> responseEntity = restTemplate.getForEntity("/films", FilmDTO[].class);
+    public void checkIfReponseContainsAddedDirectorss() {
+        ResponseEntity<DirectorDTO[]> responseEntity = restTemplate.getForEntity("/directors", DirectorDTO[].class);
         assertThat(responseEntity
                 .getStatusCode())
                 .isEqualTo(HttpStatus.OK);
 
-        List<FilmDTO> responseFilms = Arrays.asList(responseEntity.getBody());
+        List<DirectorDTO> responseFilms = Arrays.asList(responseEntity.getBody());
         for(AddFilmRequest filmRequest : createdRequests) {
             assertTrue(responseFilms
                     .stream()
-                    .anyMatch(film -> film.checkIfContentEquals(filmRequest.getDTO())));
+                    .anyMatch(film -> film.getFirstName().equals(filmRequest.getDirectorFirstName()) &&
+                    film.getLastName().equals(filmRequest.getDirectorLastName())));
         }
     }
 

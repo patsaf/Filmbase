@@ -28,6 +28,6 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-web')
 	runtime('mysql:mysql-connector-java')
 	compile('org.hibernate:hibernate-java8')
-	compile group: 'com.monitorjbl', name: 'json-view', version: '0.8'
+	compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.6.6'
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }

@@ -1,10 +1,7 @@
 package com.example.patrycja.filmbase;
 
-import com.example.patrycja.filmbase.DTO.FilmDTO;
-import com.example.patrycja.filmbase.model.Film;
 import com.example.patrycja.filmbase.request.AddFilmRequest;
-import com.example.patrycja.filmbase.template.FillBaseTemplate;
-import org.junit.Assert;
+import com.example.patrycja.filmbase.request.UpdateDateOfBirthRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,8 +11,9 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,6 +26,7 @@ public class ErrorTest {
 
     private AddFilmRequest invalidRequest;
     private AddFilmRequest duplicateRequest;
+    private UpdateDateOfBirthRequest updateRequest;
 
     @Before
     public void init() {
@@ -46,6 +45,9 @@ public class ErrorTest {
                 "Luc",
                 "Besson"
         );
+
+        updateRequest = new UpdateDateOfBirthRequest(
+                LocalDate.of(1978, Month.JANUARY, 13));
     }
 
     @Test
@@ -61,6 +63,10 @@ public class ErrorTest {
         ResponseEntity<Object> responseEntity = restTemplate.getForEntity("/films/{id}", Object.class, id);
         assertThat(responseEntity.getStatusCode())
                 .isEqualTo(HttpStatus.NOT_FOUND);
+
+        ResponseEntity<Object> directorResponseEntity = restTemplate.getForEntity("/directors/{id}", Object.class, id);
+        assertThat(directorResponseEntity.getStatusCode())
+                .isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
@@ -71,6 +77,25 @@ public class ErrorTest {
 
         ResponseEntity<String> duplicateEntity = restTemplate.postForEntity("/films", duplicateRequest, String.class);
         assertThat(duplicateEntity.getStatusCode())
+                .isEqualTo(HttpStatus.CONFLICT);
+    }
+
+    @Test
+    public void rejectUnnecessaryUpdate() {
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+                "/directors/{id}",
+                updateRequest,
+                String.class,
+                1);
+        assertThat(responseEntity.getStatusCode())
+                .isEqualTo(HttpStatus.OK);
+
+        ResponseEntity<String> duplicateResponse = restTemplate.postForEntity(
+                "/directors/{id}",
+                updateRequest,
+                String.class,
+                1);
+        assertThat(duplicateResponse.getStatusCode())
                 .isEqualTo(HttpStatus.CONFLICT);
     }
 }

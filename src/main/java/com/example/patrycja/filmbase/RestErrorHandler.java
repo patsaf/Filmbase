@@ -1,5 +1,6 @@
 package com.example.patrycja.filmbase;
 
+import com.example.patrycja.filmbase.exception.DirectorAlreadyUpToDateException;
 import com.example.patrycja.filmbase.exception.DuplicateException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,11 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = DuplicateException.class)
     public ResponseEntity<String> handleDuplicateItem(DuplicateException ex, WebRequest request) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(value = DirectorAlreadyUpToDateException.class)
+    public ResponseEntity<String> handeDirectorUpToDate(DirectorAlreadyUpToDateException ex, WebRequest request) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
     }
 }
