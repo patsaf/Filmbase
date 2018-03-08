@@ -26,8 +26,9 @@ public class ReadOneDirectorTest extends FillBaseTemplate {
 
     @Test
     public void checkIfResponseContainsDirectorWithGivenId() {
-        for(int i=1; i<=requestGenerator.getCount(); i++) {
-            ResponseEntity<DirectorDTO> responseEntity = restTemplate.getForEntity("/directors/{id}", DirectorDTO.class, i);
+        for (int i = 1; i <= requestGenerator.getCount(); i++) {
+            ResponseEntity<DirectorDTO> responseEntity = restTemplate
+                    .getForEntity("/directors/{id}", DirectorDTO.class, i);
             assertThat(responseEntity
                     .getStatusCode())
                     .isEqualTo(HttpStatus.OK);
@@ -36,14 +37,14 @@ public class ReadOneDirectorTest extends FillBaseTemplate {
             assertTrue(responseDirector
                     .getFirstName()
                     .equals(requestGenerator
-                            .getRequest(i-1)
+                            .getRequest(i - 1)
                             .getDirectorFirstName()) &&
                     responseDirector
                             .getLastName()
                             .equals(requestGenerator
-                                    .getRequest(i-1)
+                                    .getRequest(i - 1)
                                     .getDirectorLastName()
-            ));
+                            ));
         }
     }
 }

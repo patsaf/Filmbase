@@ -26,7 +26,8 @@ public class AddActorRequest {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate dateOfBirth;
 
-    public AddActorRequest() {}
+    public AddActorRequest() {
+    }
 
     public AddActorRequest(String firstName, String lastName) {
         this.firstName = firstName;

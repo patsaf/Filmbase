@@ -28,16 +28,15 @@ public class DirectorController {
     @GetMapping("/directors")
     public List<DirectorDTO> findAllDirectors() {
         List<DirectorDTO> directorDTOs = new ArrayList<>();
-        for(Director director : directorRepository.findAll()) {
-            directorDTOs.add(new DirectorDTO(director));
-        }
+        directorRepository.findAll()
+                .forEach(director -> directorDTOs.add(new DirectorDTO(director)));
         return directorDTOs;
     }
 
     @GetMapping("/directors/{id}")
     public HttpEntity<DirectorDTO> findDirector(@PathVariable("id") long id) {
         Director director = directorRepository.findById(id);
-        if(director!=null) {
+        if (director != null) {
             return ResponseEntity.ok(new DirectorDTO(director));
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -48,7 +47,7 @@ public class DirectorController {
     public DirectorDTO updateDirector(@Valid @RequestBody UpdateDateOfBirthRequest dateOfBirthRequest,
                                       @PathVariable("id") long id) {
         Director director = directorRepository.findById(id);
-        if(director.getDateOfBirth()!=null) {
+        if (director.getDateOfBirth() != null) {
             throw new AlreadyUpToDateException("All director's data is up to date!");
         }
         Director updatedDirector = new Director(

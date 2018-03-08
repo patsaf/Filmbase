@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @Repository
 public interface DirectorRepository extends JpaRepository<Director, Long> {
     Director findByFirstNameAndLastName(String firstName, String lastName);
+
     Director findById(long id);
 
     @Transactional

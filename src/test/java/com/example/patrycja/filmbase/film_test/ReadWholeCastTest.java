@@ -38,12 +38,12 @@ public class ReadWholeCastTest extends FillBaseTemplate {
 
         List<ActorDTO> actorDTOList = Arrays.asList(responseEntity.getBody());
         AddFilmRequest request = requestGenerator.getRequest(0);
-        for(AddActorRequest actorRequest : request.getActorRequests()) {
-                assertTrue(actorDTOList
-                        .stream()
-                        .anyMatch(actor -> actor.getFirstName().equals(actorRequest.getFirstName()) &&
-                                actor.getLastName().equals(actorRequest.getLastName())));
-            }
+        for (AddActorRequest actorRequest : request.getActorRequests()) {
+            assertTrue(actorDTOList
+                    .stream()
+                    .anyMatch(actor -> actor.getFirstName().equals(actorRequest.getFirstName()) &&
+                            actor.getLastName().equals(actorRequest.getLastName())));
         }
+    }
 
 }

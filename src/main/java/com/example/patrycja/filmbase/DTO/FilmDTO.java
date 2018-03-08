@@ -15,7 +15,8 @@ public class FilmDTO {
     private int productionYear;
     private List<String> cast;
 
-    public FilmDTO() {}
+    public FilmDTO() {
+    }
 
     public FilmDTO(Film film) {
         this.id = film.getId();
@@ -24,9 +25,8 @@ public class FilmDTO {
         this.types = film.getTypes();
         this.productionYear = film.getProductionYear();
         cast = new ArrayList<>();
-        for(Actor actor : film.getCast()) {
-            cast.add(actor.getFirstName() + " " + actor.getLastName());
-        }
+        film.getCast()
+                .forEach(actor -> cast.add(actor.getFirstName() + " " + actor.getLastName()));
     }
 
     public long getId() {
@@ -45,7 +45,9 @@ public class FilmDTO {
         this.title = title;
     }
 
-    public String getDirector() { return director; }
+    public String getDirector() {
+        return director;
+    }
 
     public void setDirector(String director) {
         this.director = director;
@@ -67,12 +69,16 @@ public class FilmDTO {
         this.productionYear = productionYear;
     }
 
-    public List<String> getCast() { return cast; }
+    public List<String> getCast() {
+        return cast;
+    }
 
-    public void setCast(List<String> cast) { this.cast = cast; }
+    public void setCast(List<String> cast) {
+        this.cast = cast;
+    }
 
     public Boolean checkIfContentEquals(FilmDTO filmDTO) {
-        if(title.equals(filmDTO.getTitle()) &&
+        if (title.equals(filmDTO.getTitle()) &&
                 director.equals(filmDTO.getDirector()) &&
                 types.equals(filmDTO.getTypes()) &&
                 cast.equals(filmDTO.getCast()) &&

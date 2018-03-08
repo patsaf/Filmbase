@@ -24,7 +24,7 @@ public class FillBaseTemplate {
     protected void initFilms() {
         createdRequests = new ArrayList<>();
         requestGenerator = new RequestGenerator();
-        for(int i=0; i<requestGenerator.getCount(); i++) {
+        for (int i = 0; i < requestGenerator.getCount(); i++) {
             createdRequests.add(requestGenerator.getRequest(i));
         }
     }

@@ -21,7 +21,7 @@ public class FilmGenerator {
         filmList = new ArrayList<>();
         fileLinesReader = new FileLinesReader(filePath);
 
-        for(String lineDivider : fileLinesReader.getLines()) {
+        for (String lineDivider : fileLinesReader.getLines()) {
             String[] content = lineDivider
                     .split("; ");
             List<String> typeList = Arrays
@@ -31,12 +31,12 @@ public class FilmGenerator {
 
             String[] fullNames = content[5].split(", ");
             List<Actor> cast = new ArrayList<>();
-            for(String name : fullNames) {
+            for (String name : fullNames) {
                 String[] separatedNames = name.split("_");
                 cast.add(new Actor(separatedNames[0], separatedNames[1]));
             }
 
-           filmList.add(new Film(
+            filmList.add(new Film(
                     content[0],
                     new Director(content[1], content[2]),
                     typeList,

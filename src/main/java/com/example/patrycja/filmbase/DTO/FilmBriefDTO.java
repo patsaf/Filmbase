@@ -8,7 +8,8 @@ public class FilmBriefDTO {
     private String title;
     private int productionYear;
 
-    public FilmBriefDTO() {}
+    public FilmBriefDTO() {
+    }
 
     public FilmBriefDTO(Film film) {
         this.id = film.getId();

@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @Repository
 public interface ActorRepository extends JpaRepository<Actor, Long> {
     Actor findByFirstNameAndLastName(String firstName, String lastName);
+
     Actor findById(long id);
 
     @Transactional

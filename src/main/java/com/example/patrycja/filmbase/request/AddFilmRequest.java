@@ -1,15 +1,12 @@
 package com.example.patrycja.filmbase.request;
 
-import com.example.patrycja.filmbase.DTO.DirectorDTO;
 import com.example.patrycja.filmbase.DTO.FilmDTO;
 import com.example.patrycja.filmbase.model.Actor;
 import com.example.patrycja.filmbase.model.Director;
 import com.example.patrycja.filmbase.model.Film;
-import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,7 +58,8 @@ public class AddFilmRequest {
         this.directorLastName = directorLastName;
     }
 
-    public AddFilmRequest() {}
+    public AddFilmRequest() {
+    }
 
     public AddFilmRequest(String title, List<String> types, int productionYear,
                           String directorFirstName, String directorLastName,
@@ -80,7 +78,7 @@ public class AddFilmRequest {
 
     public Film getFilm() {
         List<Actor> cast = new ArrayList<>();
-        for(AddActorRequest actorRequest : actorRequests) {
+        for (AddActorRequest actorRequest : actorRequests) {
             cast.add(new Actor(actorRequest.getFirstName(), actorRequest.getLastName()));
         }
         return new Film(title, new Director(directorFirstName, directorLastName), types, productionYear, cast);

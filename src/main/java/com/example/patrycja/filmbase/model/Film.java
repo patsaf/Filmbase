@@ -27,7 +27,8 @@ public class Film {
 
     private int productionYear;
 
-    public Film() {}
+    public Film() {
+    }
 
     public Film(String title, Director director, List<String> types, int productionYear) {
         this.title = title;
@@ -69,7 +70,7 @@ public class Film {
     }
 
     public Boolean checkIfContentEquals(Film film) {
-        if(title.equals(film.getTitle()) &&
+        if (title.equals(film.getTitle()) &&
                 director.checkIfDataEquals(film.getDirector()) &&
                 types.equals(film.getTypes()) &&
                 productionYear == film.getProductionYear()) {

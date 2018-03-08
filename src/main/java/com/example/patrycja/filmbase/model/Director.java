@@ -28,7 +28,8 @@ public class Director {
     @OneToMany(mappedBy = "director")
     List<Film> films;
 
-    public Director() {}
+    public Director() {
+    }
 
     public Director(String firstName, String lastName) {
         this.firstName = firstName;
@@ -64,7 +65,7 @@ public class Director {
     }
 
     public Boolean checkIfDataEquals(Director director) {
-        if(firstName.equals(director.getFirstName()) &&
+        if (firstName.equals(director.getFirstName()) &&
                 lastName.equals(director.getLastName()) &&
                 dateOfBirth == director.getDateOfBirth()) {
             return true;

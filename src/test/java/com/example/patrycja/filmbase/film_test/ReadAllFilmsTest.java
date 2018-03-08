@@ -28,14 +28,14 @@ public class ReadAllFilmsTest extends FillBaseTemplate {
     }
 
     @Test
-    public void checkIfReponseContainsAddedFilms() {
+    public void checkIfResponseContainsAddedFilms() {
         ResponseEntity<FilmDTO[]> responseEntity = restTemplate.getForEntity("/films", FilmDTO[].class);
         assertThat(responseEntity
                 .getStatusCode())
                 .isEqualTo(HttpStatus.OK);
 
         List<FilmDTO> responseFilms = Arrays.asList(responseEntity.getBody());
-        for(AddFilmRequest filmRequest : createdRequests) {
+        for (AddFilmRequest filmRequest : createdRequests) {
             assertTrue(responseFilms
                     .stream()
                     .anyMatch(film -> film.checkIfContentEquals(filmRequest.getDTO())));

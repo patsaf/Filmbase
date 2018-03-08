@@ -1,7 +1,5 @@
 package com.example.patrycja.filmbase.service;
 
-import com.example.patrycja.filmbase.model.Actor;
-import com.example.patrycja.filmbase.model.Director;
 import com.example.patrycja.filmbase.request.AddActorRequest;
 import com.example.patrycja.filmbase.request.AddFilmRequest;
 import org.springframework.stereotype.Service;
@@ -24,7 +22,7 @@ public class RequestGenerator {
         actorList = new ArrayList<>();
         fileLinesReader = new FileLinesReader(filePath);
 
-        for(String lineDivider : fileLinesReader.getLines()) {
+        for (String lineDivider : fileLinesReader.getLines()) {
             String[] content = lineDivider
                     .split("; ");
             List<String> typeList = Arrays
@@ -34,7 +32,7 @@ public class RequestGenerator {
 
             String[] fullNames = content[5].split(", ");
             List<AddActorRequest> cast = new ArrayList<>();
-            for(String name : fullNames) {
+            for (String name : fullNames) {
                 String[] separatedNames = name.split("_");
                 cast.add(new AddActorRequest(separatedNames[0], separatedNames[1]));
                 actorList.add(new AddActorRequest(separatedNames[0], separatedNames[1]));
@@ -61,5 +59,7 @@ public class RequestGenerator {
         return count;
     }
 
-    public AddActorRequest getActor(int index) { return actorList.get(index); }
+    public AddActorRequest getActor(int index) {
+        return actorList.get(index);
+    }
 }

@@ -25,7 +25,7 @@ public class ReadOneFilmTest extends FillBaseTemplate {
 
     @Test
     public void checkIfResponseContainsFilmWithGivenId() {
-        for(int i=1; i<=requestGenerator.getCount(); i++) {
+        for (int i = 1; i <= requestGenerator.getCount(); i++) {
             ResponseEntity<FilmDTO> responseEntity = restTemplate.getForEntity("/films/{id}", FilmDTO.class, i);
             assertThat(responseEntity
                     .getStatusCode())
@@ -34,8 +34,8 @@ public class ReadOneFilmTest extends FillBaseTemplate {
             FilmDTO responseFilm = responseEntity.getBody();
             assertTrue(responseFilm
                     .checkIfContentEquals(requestGenerator
-                                    .getRequest(i-1)
-                                    .getDTO()
+                            .getRequest(i - 1)
+                            .getDTO()
                     ));
         }
     }

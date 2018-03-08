@@ -22,7 +22,8 @@ public class Actor {
     @ManyToMany(mappedBy = "cast")
     private List<Film> films;
 
-    public Actor() {}
+    public Actor() {
+    }
 
     public Actor(String firstName, String lastName) {
         this.firstName = firstName;

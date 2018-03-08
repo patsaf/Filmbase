@@ -7,5 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FilmRepository extends JpaRepository<Film, Long> {
     Film findById(long id);
+
     Film findByTitleAndProductionYear(String title, int productionYear);
 }

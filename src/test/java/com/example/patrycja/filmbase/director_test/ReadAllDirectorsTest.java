@@ -31,17 +31,18 @@ public class ReadAllDirectorsTest extends FillBaseTemplate {
 
     @Test
     public void checkIfReponseContainsAddedDirectors() {
-        ResponseEntity<DirectorDTO[]> responseEntity = restTemplate.getForEntity("/directors", DirectorDTO[].class);
+        ResponseEntity<DirectorDTO[]> responseEntity = restTemplate
+                .getForEntity("/directors", DirectorDTO[].class);
         assertThat(responseEntity
                 .getStatusCode())
                 .isEqualTo(HttpStatus.OK);
 
         List<DirectorDTO> responseFilms = Arrays.asList(responseEntity.getBody());
-        for(AddFilmRequest filmRequest : createdRequests) {
+        for (AddFilmRequest filmRequest : createdRequests) {
             assertTrue(responseFilms
                     .stream()
                     .anyMatch(film -> film.getFirstName().equals(filmRequest.getDirectorFirstName()) &&
-                    film.getLastName().equals(filmRequest.getDirectorLastName())));
+                            film.getLastName().equals(filmRequest.getDirectorLastName())));
         }
     }
 

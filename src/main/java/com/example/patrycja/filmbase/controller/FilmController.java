@@ -38,21 +38,21 @@ public class FilmController {
     @PostConstruct
     public void initialize() {
         FilmGenerator filmGenerator = new FilmGenerator();
-        for(int i=0; i<filmGenerator.getCount(); i++) {
+        for (int i = 0; i < filmGenerator.getCount(); i++) {
             Director director = directorRepository.findByFirstNameAndLastName(
                     filmGenerator.getFilm(i).getDirector().getFirstName(),
                     filmGenerator.getFilm(i).getDirector().getLastName());
 
-            if(director==null) {
+            if (director == null) {
                 directorRepository.save(filmGenerator.getFilm(i).getDirector());
             }
 
             List<Actor> cast = filmGenerator.getFilm(i).getCast();
-            for(int j=0; j<cast.size(); j++) {
+            for (int j = 0; j < cast.size(); j++) {
                 Actor actor = actorRepository.findByFirstNameAndLastName(
                         cast.get(j).getFirstName(),
                         cast.get(j).getLastName());
-                if(actor==null) {
+                if (actor == null) {
                     actorRepository.save(cast.get(j));
                 }
             }
@@ -63,16 +63,15 @@ public class FilmController {
     @GetMapping("/films")
     public List<FilmDTO> getAllFilms() {
         List<FilmDTO> allDTOs = new ArrayList<>();
-        for(Film film : filmRepository.findAll()) {
-            allDTOs.add(new FilmDTO(film));
-        }
+        filmRepository.findAll()
+                .forEach(film -> allDTOs.add(new FilmDTO(film)));
         return allDTOs;
     }
 
     @GetMapping("/films/{id}")
     public HttpEntity<FilmDTO> findFilm(@PathVariable("id") long id) {
         Film film = filmRepository.findById(id);
-        if(film!=null) {
+        if (film != null) {
             return ResponseEntity.ok(new FilmDTO(film));
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -86,7 +85,7 @@ public class FilmController {
                 addFilmRequest.getDirectorFirstName(),
                 addFilmRequest.getDirectorLastName());
 
-        if(director==null) {
+        if (director == null) {
             director = new Director(
                     addFilmRequest.getDirectorFirstName(),
                     addFilmRequest.getDirectorLastName());
@@ -94,12 +93,12 @@ public class FilmController {
         }
 
         List<Actor> cast = new ArrayList<>();
-        for(AddActorRequest actorRequest : addFilmRequest.getActorRequests()) {
+        for (AddActorRequest actorRequest : addFilmRequest.getActorRequests()) {
             Actor actor = actorRepository.findByFirstNameAndLastName(
                     actorRequest.getFirstName(),
                     actorRequest.getLastName());
 
-            if(actor==null) {
+            if (actor == null) {
                 actor = new Actor(
                         actorRequest.getFirstName(),
                         actorRequest.getLastName());
@@ -115,8 +114,8 @@ public class FilmController {
                 addFilmRequest.getProductionYear(),
                 cast);
 
-        for(Film film : filmRepository.findAll()) {
-            if(newFilm.checkIfContentEquals(film)) {
+        for (Film film : filmRepository.findAll()) {
+            if (newFilm.checkIfContentEquals(film)) {
                 throw new DuplicateException("Film already exists!");
             }
         }
@@ -128,9 +127,8 @@ public class FilmController {
     public List<ActorDTO> getFilmCast(@PathVariable("id") long id) {
         Film film = filmRepository.findById(id);
         List<ActorDTO> actorDTOS = new ArrayList<>();
-        for(Actor actor : film.getCast()) {
-            actorDTOS.add(new ActorDTO(actor));
-        }
+        film.getCast()
+                .forEach(actor -> actorDTOS.add(new ActorDTO(actor)));
         return actorDTOS;
     }
 
@@ -142,25 +140,25 @@ public class FilmController {
                 actorRequest.getFirstName(),
                 actorRequest.getLastName());
         Actor finalActor = actor;
-        if(actor == null) {
+        if (actor == null) {
             List<Film> films = new ArrayList<>();
             films.add(film);
             actor = new Actor(actorRequest.getFirstName(),
                     actorRequest.getLastName(),
                     actorRequest.getDateOfBirth(),
                     films);
-        } else if(film.getCast()
-                    .stream()
-                    .anyMatch(oldActor -> oldActor.getFirstName().equals(finalActor.getFirstName()) &&
-                    oldActor.getLastName().equals(finalActor.getLastName()))){
-                throw new DuplicateException("Actor already in cast!");
+        } else if (film.getCast()
+                .stream()
+                .anyMatch(oldActor -> oldActor.getFirstName().equals(finalActor.getFirstName()) &&
+                        oldActor.getLastName().equals(finalActor.getLastName()))) {
+            throw new DuplicateException("Actor already in cast!");
         }
         actorRepository.save(actor);
         List<Actor> cast = film.getCast();
         cast.add(actor);
         filmRepository.save(film);
         List<ActorDTO> actorDTOS = new ArrayList<>();
-        for(Actor actor1 : cast) {
+        for (Actor actor1 : cast) {
             actorDTOS.add(new ActorDTO(actor1));
         }
         return actorDTOS;

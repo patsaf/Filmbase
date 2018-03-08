@@ -15,7 +15,8 @@ public class DirectorDTO {
     private LocalDate dateOfBirth;
     private List<FilmBriefDTO> films;
 
-    public DirectorDTO() {}
+    public DirectorDTO() {
+    }
 
     public DirectorDTO(Director director) {
         this.id = director.getId();
@@ -23,9 +24,8 @@ public class DirectorDTO {
         this.lastName = director.getLastName();
         this.dateOfBirth = director.getDateOfBirth();
         films = new ArrayList<>();
-        for(Film film : director.getFilms()) {
-            films.add(new FilmBriefDTO(film));
-        }
+        director.getFilms()
+                .forEach(film -> films.add(new FilmBriefDTO(film)));
     }
 
     public long getId() {
