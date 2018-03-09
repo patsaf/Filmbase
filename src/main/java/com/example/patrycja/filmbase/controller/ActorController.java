@@ -33,9 +33,8 @@ public class ActorController {
     @GetMapping("/actors")
     public List<ActorDTO> findAllActors() {
         List<ActorDTO> allDTOs = new ArrayList<>();
-        for(Actor actor : actorRepository.findAll()) {
-            allDTOs.add(new ActorDTO(actor));
-        }
+        actorRepository.findAll()
+                .forEach(actor -> allDTOs.add(new ActorDTO(actor)));
         return allDTOs;
     }
 

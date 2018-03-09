@@ -1,7 +1,6 @@
-package com.example.patrycja.filmbase.film_test;
+package com.example.patrycja.filmbase.user_test;
 
-import com.example.patrycja.filmbase.request.AddActorRequest;
-import com.example.patrycja.filmbase.request.AddFilmRequest;
+import com.example.patrycja.filmbase.request.SignUpRequest;
 import com.google.gson.Gson;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,15 +8,10 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -25,13 +19,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-public class AddNewFilmTest {
+public class RegisterUserTest {
 
     @Autowired
     private WebApplicationContext context;
 
     private MockMvc mockMvc;
-    private AddFilmRequest filmRequest;
+    private SignUpRequest signUpRequest;
 
     @Before
     public void init() {
@@ -39,22 +33,15 @@ public class AddNewFilmTest {
                 .webAppContextSetup(context)
                 .apply(springSecurity())
                 .build();
-
-        List<AddActorRequest> actorRequests = new ArrayList<>();
-        actorRequests.add(new AddActorRequest("Jean", "Reno"));
-        String[] types = {"Crime", "Drama", "Thriller"};
-        filmRequest = new AddFilmRequest("Leon", Arrays.asList(types), 1994,
-                "Luc", "Besson", actorRequests);
+        signUpRequest = new SignUpRequest("user", "password", "user@test.mail");
     }
 
     @Test
-    @WithMockUser(username = "test", password = "test", roles = {"USER"})
-    public void addValidFilm() throws Exception {
+    public void RegisterValidUser() throws Exception {
         Gson gson = new Gson();
-        String json = gson.toJson(filmRequest);
-        this.mockMvc.perform(post("/films")
+        this.mockMvc.perform(post("/register")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
+                .content(gson.toJson(signUpRequest)))
                 .andExpect(status().isCreated());
     }
 }

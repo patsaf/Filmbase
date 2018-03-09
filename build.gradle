@@ -26,8 +26,12 @@ repositories {
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
 	compile('org.springframework.boot:spring-boot-starter-web')
+	compile('org.springframework.boot:spring-boot-starter-security')
+	testCompile group: 'org.springframework.security', name: 'spring-security-test', version: '4.0.0.RELEASE'
+	compile group: 'com.google.code.gson', name: 'gson', version: '2.3.1'
 	runtime('mysql:mysql-connector-java')
 	compile('org.hibernate:hibernate-java8')
 	compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.6.6'
 	testCompile('org.springframework.boot:spring-boot-starter-test')
+
 }

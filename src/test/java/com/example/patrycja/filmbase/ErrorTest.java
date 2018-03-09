@@ -3,15 +3,22 @@ package com.example.patrycja.filmbase;
 import com.example.patrycja.filmbase.DTO.FilmBriefDTO;
 import com.example.patrycja.filmbase.request.AddActorRequest;
 import com.example.patrycja.filmbase.request.AddFilmRequest;
+import com.example.patrycja.filmbase.request.SignUpRequest;
 import com.example.patrycja.filmbase.request.UpdateDateOfBirthRequest;
+import com.example.patrycja.filmbase.template.LocalDateSerializer;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -20,13 +27,19 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 public class ErrorTest {
 
     @Autowired
-    private TestRestTemplate restTemplate;
+    private WebApplicationContext context;
+
+    private MockMvc mockMvc;
 
     private AddFilmRequest invalidRequest;
     private AddFilmRequest duplicateRequest;
@@ -38,8 +51,15 @@ public class ErrorTest {
     private AddActorRequest existingRequest;
     private AddActorRequest nonExistingFilmRequest;
 
+    private SignUpRequest userRequest;
+    private SignUpRequest invalidUserRequest;
+
     @Before
     public void init() {
+        mockMvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
         List<AddActorRequest> actorRequests = new ArrayList<>();
         actorRequests.add(new AddActorRequest("Colin", "Firth"));
         invalidRequest = new AddFilmRequest(
@@ -81,111 +101,134 @@ public class ErrorTest {
         existingRequest = new AddActorRequest("Colin", "Firth");
         nonExistingFilmRequest = new AddActorRequest("Helena", "Bohnam-Carter",
                 invalidList, LocalDate.of(1965, Month.MAY, 26));
+        userRequest = new SignUpRequest("user", "password", "user@test.mail");
+        invalidUserRequest = new SignUpRequest("user", "user", "user");
     }
 
     @Test
-    public void rejectRequestWithInvalidData() {
-        ResponseEntity<Object> responseEntity = restTemplate.postForEntity("/films", invalidRequest, Object.class);
-        assertThat(responseEntity.getStatusCode())
-                .isEqualTo(HttpStatus.BAD_REQUEST);
+    @WithMockUser(username = "test", password = "test", roles = {"USER"})
+    public void rejectRequestWithInvalidData() throws Exception {
+        Gson gson = new Gson();
+        this.mockMvc.perform(post("/films")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(gson.toJson(invalidRequest)))
+                .andExpect(status().isBadRequest());
 
-        ResponseEntity<Object> responseEntityActor = restTemplate.postForEntity("/actors", invalidActorRequest,
-                Object.class);
-        assertThat(responseEntityActor.getStatusCode())
-                .isEqualTo(HttpStatus.BAD_REQUEST);
+        this.mockMvc.perform(post("/actors")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(gson.toJson(invalidActorRequest)))
+                .andExpect(status().isBadRequest());
+
+        this.mockMvc.perform(post("/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(gson.toJson(invalidUserRequest)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void checkNonExistingId() {
+    @WithMockUser(username = "test", password = "test", roles = {"USER"})
+    public void checkNonExistingId() throws Exception {
         long id = 12345;
-        ResponseEntity<Object> responseEntity = restTemplate.getForEntity("/films/{id}", Object.class, id);
-        assertThat(responseEntity.getStatusCode())
-                .isEqualTo(HttpStatus.NOT_FOUND);
+        this.mockMvc.perform(get("/films/{id}", id)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
 
-        ResponseEntity<Object> directorResponseEntity = restTemplate.getForEntity("/directors/{id}",
-                Object.class, id);
-        assertThat(directorResponseEntity.getStatusCode())
-                .isEqualTo(HttpStatus.NOT_FOUND);
+        this.mockMvc.perform(get("/directors/{id}", id)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
 
-        ResponseEntity<Object> actorResponseEntity = restTemplate.getForEntity("/actors/{id}",
-                Object.class, id);
-        assertThat(actorResponseEntity.getStatusCode())
-                .isEqualTo(HttpStatus.NOT_FOUND);
+        this.mockMvc.perform(get("/actors/{id}", id)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        this.mockMvc.perform(get("/users/{id}", id)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 
     @Test
-    public void rejectDuplicateRequest() {
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity("/films",
-                duplicateRequest, String.class);
-        assertThat(responseEntity.getStatusCode())
-                .isEqualTo(HttpStatus.CREATED);
+    @WithMockUser(username = "test", password = "test", roles = {"USER"})
+    public void rejectDuplicateRequest() throws Exception {
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, new LocalDateSerializer())
+                .create();
+        this.mockMvc.perform(post("/films")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(gson.toJson(duplicateRequest)))
+                .andExpect(status().isCreated());
 
-        ResponseEntity<String> duplicateEntity = restTemplate.postForEntity("/films",
-                duplicateRequest, String.class);
-        assertThat(duplicateEntity.getStatusCode())
-                .isEqualTo(HttpStatus.CONFLICT);
+        this.mockMvc.perform(post("/films")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(gson.toJson(duplicateRequest)))
+                .andExpect(status().isConflict());
 
-        ResponseEntity<String> responseEntityActor = restTemplate.postForEntity("/actors",
-                actorRequest, String.class);
-        assertThat(responseEntityActor.getStatusCode())
-                .isEqualTo(HttpStatus.CREATED);
+        this.mockMvc.perform(post("/actors")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(gson.toJson(actorRequest)))
+                .andExpect(status().isCreated());
 
-        ResponseEntity<String> duplicateEntityActor = restTemplate.postForEntity("/actors",
-                actorRequest, String.class);
-        assertThat(duplicateEntityActor.getStatusCode())
-                .isEqualTo(HttpStatus.CONFLICT);
+        this.mockMvc.perform(post("/actors")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(gson.toJson(actorRequest)))
+                .andExpect(status().isConflict());
 
-        ResponseEntity<String> existingActorEntity = restTemplate.postForEntity("/films/{id}/cast",
-                existingRequest, String.class, 1);
-        assertThat(existingActorEntity.getStatusCode())
-                .isEqualTo(HttpStatus.OK);
+        this.mockMvc.perform(post("/films/{id}/cast", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(gson.toJson(existingRequest)))
+                .andExpect(status().isOk());
 
-        ResponseEntity<String> existingActorEntityDuplicate = restTemplate.postForEntity("/films/{id}/cast",
-                existingRequest, String.class, 1);
-        assertThat(existingActorEntityDuplicate.getStatusCode())
-                .isEqualTo(HttpStatus.CONFLICT);
+        this.mockMvc.perform(post("/films/{id}/cast", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(gson.toJson(existingRequest)))
+                .andExpect(status().isConflict());
+
+        this.mockMvc.perform(post("/register", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(gson.toJson(userRequest)))
+                .andExpect(status().isCreated());
+
+        this.mockMvc.perform(post("/register", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(gson.toJson(userRequest)))
+                .andExpect(status().isConflict());
     }
 
     @Test
-    public void rejectUnnecessaryUpdate() {
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity(
-                "/directors/{id}",
-                updateRequest,
-                String.class,
-                1);
-        assertThat(responseEntity.getStatusCode())
-                .isEqualTo(HttpStatus.OK);
+    @WithMockUser(username = "test", password = "test", roles = {"USER"})
+    public void rejectUnnecessaryUpdate() throws Exception {
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, new LocalDateSerializer())
+                .create();
+        this.mockMvc.perform(post("/directors/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(gson.toJson(updateRequest)))
+                .andExpect(status().isOk());
 
-        ResponseEntity<String> duplicateResponse = restTemplate.postForEntity(
-                "/directors/{id}",
-                updateRequest,
-                String.class,
-                1);
-        assertThat(duplicateResponse.getStatusCode())
-                .isEqualTo(HttpStatus.CONFLICT);
+        this.mockMvc.perform(post("/directors/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(gson.toJson(updateRequest)))
+                .andExpect(status().isConflict());
 
-        ResponseEntity<String> responseEntityActor = restTemplate.postForEntity(
-                "/actors/{id}",
-                updateRequest,
-                String.class,
-                1);
-        assertThat(responseEntityActor.getStatusCode())
-                .isEqualTo(HttpStatus.OK);
+        this.mockMvc.perform(post("/actors/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(gson.toJson(updateRequest)))
+                .andExpect(status().isOk());
 
-        ResponseEntity<String> duplicateResponseActor = restTemplate.postForEntity(
-                "/actors/{id}",
-                updateRequest,
-                String.class,
-                1);
-        assertThat(duplicateResponseActor.getStatusCode())
-                .isEqualTo(HttpStatus.CONFLICT);
+        this.mockMvc.perform(post("/actors/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(gson.toJson(updateRequest)))
+                .andExpect(status().isConflict());
     }
 
     @Test
-    public void rejectActorWithNonExistingFilm() {
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity("/actors",
-                nonExistingFilmRequest, String.class);
-        assertThat(responseEntity.getStatusCode())
-                .isEqualTo(HttpStatus.NOT_FOUND);
+    @WithMockUser(username = "test", password = "test", roles = {"USER"})
+    public void rejectActorWithNonExistingFilm() throws Exception {
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, new LocalDateSerializer())
+                .create();
+        this.mockMvc.perform(post("/actors")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(gson.toJson(nonExistingFilmRequest)))
+                .andExpect(status().isNotFound());
     }
 }

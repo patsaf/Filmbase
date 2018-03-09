@@ -1,7 +1,13 @@
-package com.example.patrycja.filmbase.actor_test;
+package com.example.patrycja.filmbase.user_test;
 
-import com.example.patrycja.filmbase.DTO.ActorDTO;
+import com.example.patrycja.filmbase.DTO.FilmDTO;
+import com.example.patrycja.filmbase.DTO.UserDTO;
+import com.example.patrycja.filmbase.request.AddFilmRequest;
+import com.example.patrycja.filmbase.request.SignUpRequest;
 import com.example.patrycja.filmbase.template.FillBaseTemplate;
+import com.example.patrycja.filmbase.template.LocalDateDeserializer;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +21,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertTrue;
@@ -26,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-public class ReadOneActorTest extends FillBaseTemplate {
+public class ReadAllUsersTest extends FillBaseTemplate {
 
     @Autowired
     private WebApplicationContext context;
@@ -40,20 +48,18 @@ public class ReadOneActorTest extends FillBaseTemplate {
                 .apply(springSecurity())
                 .build();
         setupParser();
-        initFilms();
-        postFilms();
+        initUsers();
+        postUsers();
     }
 
-    @WithMockUser(username = "test", password = "test", roles = {"USER"})
-    protected void postFilms() {
+    private void postUsers() {
         List<String> jsons = new ArrayList<>();
-        createdRequests.forEach(filmRequest -> jsons.add(gsonSerialize.toJson(filmRequest)));
+        userRequests.forEach(userRequest -> jsons.add(gsonSerialize.toJson(userRequest)));
         jsons.forEach(json -> {
             try {
-                this.mockMvc.perform(post("/films")
+                mockMvc.perform(post("/register")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(json)
-                );
+                        .content(json));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -61,28 +67,21 @@ public class ReadOneActorTest extends FillBaseTemplate {
     }
 
     @Test
-    public void checkIfResponseContainsActorWithGivenId() throws Exception {
-        for (int i = 1; i <= requestGenerator.getCount(); i++) {
-            MvcResult mvcResult = this.mockMvc.perform(get("/actors/{id}", i)
-                    .accept(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk())
-                    .andReturn();
+    @WithMockUser(username = "test", password = "test", roles = {"USER"})
+    public void checkIfResponseContainsAddedUsers() throws Exception {
+        MvcResult mvcResult = this.mockMvc.perform(get("/users")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
 
-            ActorDTO responseActor = gsonSerialize.fromJson(mvcResult
-                            .getResponse()
-                            .getContentAsString(),
-                    ActorDTO.class);
-            assertTrue(responseActor
-                    .getFirstName()
-                    .equals(requestGenerator
-                            .getActor(i - 1)
-                            .getFirstName()) &&
-                    responseActor
-                            .getLastName()
-                            .equals(requestGenerator
-                                    .getActor(i - 1)
-                                    .getLastName()
-                            ));
+        String contentAsString = mvcResult
+                .getResponse()
+                .getContentAsString();
+        List<UserDTO> responseUsers = Arrays.asList(gsonDeserialize.fromJson(contentAsString, UserDTO[].class));
+        for (SignUpRequest userRequest : userRequests) {
+            assertTrue(responseUsers
+                    .stream()
+                    .anyMatch(film -> film.checkIfDataEquals(userRequest.getDTO())));
         }
     }
 }
