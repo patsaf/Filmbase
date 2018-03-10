@@ -27,6 +27,10 @@ public class Film {
 
     private int productionYear;
 
+    private double rate;
+    private long sum;
+    private long count;
+
     public Film() {
     }
 
@@ -35,6 +39,8 @@ public class Film {
         this.director = director;
         this.types = types;
         this.productionYear = productionYear;
+        rate = 0;
+        sum = count = 0;
     }
 
     public Film(String title, Director director, List<String> types, int productionYear, List<Actor> cast) {
@@ -43,6 +49,8 @@ public class Film {
         this.types = types;
         this.productionYear = productionYear;
         this.cast = cast;
+        rate = 0;
+        sum = count = 0;
     }
 
     public long getId() {
@@ -67,6 +75,24 @@ public class Film {
 
     public int getProductionYear() {
         return productionYear;
+    }
+
+    public double getRate() {
+        return rate;
+    }
+
+    public long getSum() {
+        return sum;
+    }
+
+    public long getCount() {
+        return count;
+    }
+
+    public void rate(double i) {
+        sum += i;
+        count++;
+        rate = sum/count;
     }
 
     public Boolean checkIfContentEquals(Film film) {

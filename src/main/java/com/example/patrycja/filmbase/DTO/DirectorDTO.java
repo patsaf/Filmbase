@@ -14,6 +14,7 @@ public class DirectorDTO {
     private String lastName;
     private LocalDate dateOfBirth;
     private List<FilmBriefDTO> films;
+    private double rate;
 
     public DirectorDTO() {
     }
@@ -26,6 +27,7 @@ public class DirectorDTO {
         films = new ArrayList<>();
         director.getFilms()
                 .forEach(film -> films.add(new FilmBriefDTO(film)));
+        this.rate = director.getRate();
     }
 
     public long getId() {
@@ -68,11 +70,20 @@ public class DirectorDTO {
         this.films = films;
     }
 
+    public double getRate() {
+        return rate;
+    }
+
+    public void setRate(double rate) {
+        this.rate = rate;
+    }
+
     public Boolean checkIfDataEquals(DirectorDTO directorDTO) {
         if(firstName.equals(directorDTO.getFirstName()) &&
                 lastName.equals(directorDTO.getLastName()) &&
                 dateOfBirth == directorDTO.getDateOfBirth() &&
-                films.equals(directorDTO.getFilms())) {
+                films.equals(directorDTO.getFilms()) &&
+                rate == directorDTO.getRate()) {
             return true;
         }
         return false;

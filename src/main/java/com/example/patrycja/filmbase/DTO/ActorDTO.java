@@ -14,16 +14,19 @@ public class ActorDTO {
     private String lastName;
     private LocalDate dateOfBirth;
     private List<FilmBriefDTO> films;
+    private double rate;
 
     public ActorDTO() {
     }
 
-    public ActorDTO(long id, String firstName, String lastName, LocalDate dateOfBirth, List<FilmBriefDTO> films) {
+    public ActorDTO(long id, String firstName, String lastName, LocalDate dateOfBirth,
+                    List<FilmBriefDTO> films, double rate) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.dateOfBirth = dateOfBirth;
         this.films = films;
+        this.rate = rate;
     }
 
     public ActorDTO(Actor actor) {
@@ -34,6 +37,7 @@ public class ActorDTO {
         this.films = new ArrayList<>();
         actor.getFilms()
                 .forEach(film -> films.add(new FilmBriefDTO(film)));
+        this.rate = actor.getRate();
     }
 
     public long getId() {
@@ -76,11 +80,20 @@ public class ActorDTO {
         this.films = films;
     }
 
+    public double getRate() {
+        return rate;
+    }
+
+    public void setRate(double rate) {
+        this.rate = rate;
+    }
+
     public Boolean checkIfDataEquals(ActorDTO actorDTO) {
         if(firstName.equals(actorDTO.getFirstName()) &&
                 lastName.equals(actorDTO.getLastName()) &&
                 dateOfBirth == actorDTO.getDateOfBirth() &&
-                films.equals(actorDTO.getFilms())) {
+                films.equals(actorDTO.getFilms()) &&
+                rate == actorDTO.getRate()) {
             return true;
         }
         return false;

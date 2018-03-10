@@ -193,7 +193,7 @@ public class ErrorTest {
                 .andExpect(status().isConflict());
     }
 
-    @Test
+    @Test //TODO: TEST TEMPORARILY NOT WORKING
     @WithMockUser(username = "test", password = "test", roles = {"USER"})
     public void rejectUnnecessaryUpdate() throws Exception {
         Gson gson = new GsonBuilder()

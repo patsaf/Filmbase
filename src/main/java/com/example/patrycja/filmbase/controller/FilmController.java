@@ -3,19 +3,24 @@ package com.example.patrycja.filmbase.controller;
 import com.example.patrycja.filmbase.DTO.ActorDTO;
 import com.example.patrycja.filmbase.DTO.FilmDTO;
 import com.example.patrycja.filmbase.exception.DuplicateException;
+import com.example.patrycja.filmbase.exception.InvalidParamException;
 import com.example.patrycja.filmbase.model.Actor;
 import com.example.patrycja.filmbase.model.Director;
+import com.example.patrycja.filmbase.model.Film;
+import com.example.patrycja.filmbase.model.User;
 import com.example.patrycja.filmbase.repository.ActorRepository;
 import com.example.patrycja.filmbase.repository.DirectorRepository;
+import com.example.patrycja.filmbase.repository.FilmRepository;
+import com.example.patrycja.filmbase.repository.UserRepository;
 import com.example.patrycja.filmbase.request.AddActorRequest;
 import com.example.patrycja.filmbase.request.AddFilmRequest;
-import com.example.patrycja.filmbase.model.Film;
-import com.example.patrycja.filmbase.repository.FilmRepository;
 import com.example.patrycja.filmbase.service.FilmGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
@@ -34,6 +39,9 @@ public class FilmController {
 
     @Autowired
     ActorRepository actorRepository;
+
+    @Autowired
+    UserRepository userRepository;
 
     @PostConstruct
     public void initialize() {
@@ -75,6 +83,74 @@ public class FilmController {
             return ResponseEntity.ok(new FilmDTO(film));
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PostMapping("/films/{id}") //TODO: test
+    public HttpEntity<FilmDTO> processFilm(@RequestParam(value = "action") String action,
+                                           @RequestParam(value = "rating", required = false) Double rating,
+                                           @PathVariable("id") long id) {
+        Object principal = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        User user = userRepository.findByUsername(username);
+        Film film = filmRepository.findById(id);
+        if (action.equalsIgnoreCase("favourite")) {
+            if (user.getFavFilms().contains(film)) {
+                throw new DuplicateException("This film is already on your list!");
+            }
+            user.getFavFilms().add(film);
+            userRepository.save(user);
+        } else if (action.equalsIgnoreCase("wishlist")) {
+            if (user.getFilmWishlist().contains(film)) {
+                throw new DuplicateException("This film is already on your list!");
+            }
+            user.getFilmWishlist().add(film);
+            userRepository.save(user);
+        } else if (action.equalsIgnoreCase("rate")) {
+            if (user.getRatedFilms().containsKey(film.getId())) {
+                throw new DuplicateException("You've already rated this film!");
+            } else if ((rating < 0) || (rating > 10)) { //TODO: action when rating==null
+                throw new InvalidParamException("Your rating must fall between 0 and 10!");
+            }
+            film.rate(rating);
+            filmRepository.save(film);
+            user.getRatedFilms().put(film.getId(), rating);
+            userRepository.save(user);
+        } else {
+            throw new InvalidParamException("Invalid action request!");
+        }
+        return ResponseEntity.ok(new FilmDTO(film));
+    }
+
+    @DeleteMapping("/films/{id}") //TODO: test
+    public HttpStatus deleteFilm(@PathVariable("id") long id) {
+        Object principal = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        if (userRepository
+                .findByUsername(username)
+                .isAdmin()) {
+            Film film = filmRepository.findById(id);
+            List<Actor> castById = filmRepository.getCastById(id);
+            filmRepository.delete(film);
+            if (film
+                    .getDirector()
+                    .getFilms()
+                    .isEmpty()) {
+                directorRepository.delete(film.getDirector());
+            }
+            for (Actor actor : castById) {
+                if (actor.getFilms().isEmpty()) {
+                    actorRepository.delete(actor);
+                }
+            }
+            return HttpStatus.OK;
+        }
+        return HttpStatus.FORBIDDEN;
     }
 
     @PostMapping("/films")

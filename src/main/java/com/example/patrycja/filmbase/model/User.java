@@ -1,10 +1,6 @@
 package com.example.patrycja.filmbase.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import org.hibernate.validator.constraints.Email;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,10 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -49,6 +42,18 @@ public class User implements UserDetails {
     @OneToMany
     List<Director> favDirectors;
 
+    @OneToMany
+    List<Film> filmWishlist;
+
+    @ElementCollection
+    Map<Long, Double> ratedFilms;
+
+    @ElementCollection
+    Map<Long, Double> ratedActors;
+
+    @ElementCollection
+    Map<Long, Double> ratedDirectors;
+
     public User() {
     }
 
@@ -58,9 +63,17 @@ public class User implements UserDetails {
         this.email = email;
         this.registerDate = registerDate;
         isAdmin = false;
+        initCollections();
+    }
+
+    private void initCollections() {
         favFilms = new ArrayList<>();
         favActors = new ArrayList<>();
         favDirectors = new ArrayList<>();
+        filmWishlist = new ArrayList<>();
+        ratedFilms = new HashMap<>();
+        ratedActors = new HashMap<>();
+        ratedDirectors = new HashMap<>();
     }
 
     public void makeAdmin() {
@@ -93,6 +106,22 @@ public class User implements UserDetails {
 
     public LocalDate getRegisterDate() {
         return registerDate;
+    }
+
+    public List<Film> getFilmWishlist() {
+        return filmWishlist;
+    }
+
+    public Map<Long, Double> getRatedFilms() {
+        return ratedFilms;
+    }
+
+    public Map<Long, Double> getRatedActors() {
+        return ratedActors;
+    }
+
+    public Map<Long, Double> getRatedDirectors() {
+        return ratedDirectors;
     }
 
     @Override

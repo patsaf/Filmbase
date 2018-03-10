@@ -1,11 +1,5 @@
 package com.example.patrycja.filmbase.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -28,6 +22,10 @@ public class Director {
     @OneToMany(mappedBy = "director")
     List<Film> films;
 
+    private double rate;
+    private long sum;
+    private long count;
+
     public Director() {
     }
 
@@ -35,6 +33,8 @@ public class Director {
         this.firstName = firstName;
         this.lastName = lastName;
         films = new ArrayList<>();
+        rate = 0;
+        sum = count = 0;
     }
 
     public Director(String firstName, String lastName, LocalDate dateOfBirth, List<Film> films) {
@@ -42,6 +42,8 @@ public class Director {
         this.lastName = lastName;
         this.dateOfBirth = dateOfBirth;
         this.films = films;
+        rate = 0;
+        sum = count = 0;
     }
 
     public long getId() {
@@ -64,10 +66,29 @@ public class Director {
         return films;
     }
 
+    public double getRate() {
+        return rate;
+    }
+
+    public long getSum() {
+        return sum;
+    }
+
+    public long getCount() {
+        return count;
+    }
+
+    public void rate(double i) {
+        sum += i;
+        count++;
+        rate = sum/count;
+    }
+
     public Boolean checkIfDataEquals(Director director) {
         if (firstName.equals(director.getFirstName()) &&
                 lastName.equals(director.getLastName()) &&
-                dateOfBirth == director.getDateOfBirth()) {
+                dateOfBirth == director.getDateOfBirth() &&
+                rate == director.getRate()) {
             return true;
         }
         return false;

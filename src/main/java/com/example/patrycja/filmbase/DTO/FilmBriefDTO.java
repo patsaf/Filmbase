@@ -7,6 +7,7 @@ public class FilmBriefDTO {
     private long id;
     private String title;
     private int productionYear;
+    private double rate;
 
     public FilmBriefDTO() {
     }
@@ -15,6 +16,7 @@ public class FilmBriefDTO {
         this.id = film.getId();
         this.title = film.getTitle();
         this.productionYear = film.getProductionYear();
+        this.rate = film.getRate();
     }
 
     public long getId() {
@@ -41,9 +43,18 @@ public class FilmBriefDTO {
         this.productionYear = productionYear;
     }
 
+    public double getRate() {
+        return rate;
+    }
+
+    public void setRate(double rate) {
+        this.rate = rate;
+    }
+
     public Boolean checkIfContentEquals(FilmBriefDTO briefDTO) {
-        if(title.equals(briefDTO.getTitle()) &&
-                productionYear == briefDTO.getProductionYear()) {
+        if (title.equals(briefDTO.getTitle()) &&
+                productionYear == briefDTO.getProductionYear() &&
+                rate == briefDTO.getRate()) {
             return true;
         }
         return false;

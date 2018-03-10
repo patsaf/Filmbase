@@ -67,7 +67,7 @@ public class ReadOneUserTest extends FillBaseTemplate {
     @WithMockUser(username = "test", password = "test", roles = {"USER"})
     public void checkIfResponseContainsUserWithGivenId() throws Exception {
         for (int i = 1; i <= userRequests.size(); i++) {
-            MvcResult mvcResult = this.mockMvc.perform(get("/users/{id}", i)
+            MvcResult mvcResult = this.mockMvc.perform(get("/users/{id}", i+1)
                     .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andReturn();

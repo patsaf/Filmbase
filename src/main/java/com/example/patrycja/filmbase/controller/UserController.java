@@ -9,17 +9,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+
+import static com.sun.jmx.snmp.ThreadContext.contains;
 
 @RestController
 public class UserController {
 
     @Autowired
     UserRepository userRepository;
+
+    @PostConstruct
+    public void introduceAdmin() {
+        User admin = new User("admin", "hardpass", "admin@gmail.com", LocalDate.now());
+        admin.makeAdmin();
+        userRepository.save(admin);
+    }
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
@@ -47,5 +62,23 @@ public class UserController {
             return ResponseEntity.ok(new UserDTO(user));
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PostMapping("/users/{id}") //TODO: test
+    public HttpEntity<UserDTO> upgradeToAdmin(@PathVariable("id") long id) {
+        Object principal = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+        String username = ((UserDetails)principal).getUsername();
+        if(userRepository
+                .findByUsername(username)
+                .isAdmin()) {
+            User user = userRepository.findById(id);
+            user.makeAdmin();
+            userRepository.save(user);
+            return ResponseEntity.ok(new UserDTO(user));
+        }
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 }

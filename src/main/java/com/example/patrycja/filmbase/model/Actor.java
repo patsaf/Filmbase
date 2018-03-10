@@ -22,6 +22,10 @@ public class Actor {
     @ManyToMany(mappedBy = "cast")
     private List<Film> films;
 
+    private double rate;
+    private long sum;
+    private long count;
+
     public Actor() {
     }
 
@@ -29,6 +33,8 @@ public class Actor {
         this.firstName = firstName;
         this.lastName = lastName;
         films = new ArrayList<>();
+        rate = 0;
+        sum = count = 0;
     }
 
     public Actor(String firstName, String lastName, LocalDate dateOfBirth) {
@@ -36,6 +42,8 @@ public class Actor {
         this.lastName = lastName;
         this.dateOfBirth = dateOfBirth;
         films = new ArrayList<>();
+        rate = 0;
+        sum = count = 0;
     }
 
     public Actor(String firstName, String lastName, LocalDate dateOfBirth, List<Film> films) {
@@ -43,6 +51,8 @@ public class Actor {
         this.lastName = lastName;
         this.dateOfBirth = dateOfBirth;
         this.films = films;
+        rate = 0;
+        sum = count = 0;
     }
 
     public long getId() {
@@ -65,8 +75,26 @@ public class Actor {
         return films;
     }
 
+    public double getRate() {
+        return rate;
+    }
+
+    public long getSum() {
+        return sum;
+    }
+
+    public long getCount() {
+        return count;
+    }
+
+    public void rate(double i) {
+        sum += i;
+        count++;
+        rate = sum / count;
+    }
+
     public Boolean checkIfDataEquals(Actor actor) {
-        if(firstName.equals(actor.getFirstName()) &&
+        if (firstName.equals(actor.getFirstName()) &&
                 lastName.equals(actor.getLastName()) &&
                 dateOfBirth == actor.getDateOfBirth() &&
                 films.equals(actor.getFilms())) {
