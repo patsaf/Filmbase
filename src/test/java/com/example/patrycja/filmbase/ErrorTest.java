@@ -261,5 +261,35 @@ public class ErrorTest {
                 .param("action", "rate")
                 .param("rating", "12.0"))
                 .andExpect(status().isBadRequest());
+
+        this.mockMvc.perform(post("/films/{id}", 1)
+                .param("action", "rate"))
+                .andExpect(status().isBadRequest());
+
+        this.mockMvc.perform(post("/actors/{id}", 1)
+                .param("action", "rate"))
+                .andExpect(status().isBadRequest());
+
+        this.mockMvc.perform(post("/directors/{id}", 1)
+                .param("action", "rate"))
+                .andExpect(status().isBadRequest());
+
+        this.mockMvc.perform(post("/actors/{id}", 2)
+                .param("action", "update"))
+                .andExpect(status().isBadRequest());
+
+        this.mockMvc.perform(post("/directors/{id}", 2)
+                .param("action", "update"))
+                .andExpect(status().isBadRequest());
+
+        this.mockMvc.perform(post("/actors/{id}", 2)
+                .param("action", "update")
+                .param("birthday", "21/01/1996"))
+                .andExpect(status().isBadRequest());
+
+        this.mockMvc.perform(post("/directors/{id}", 2)
+                .param("action", "update")
+                .param("birthday", "1996-01-21"))
+                .andExpect(status().isBadRequest());
     }
 }

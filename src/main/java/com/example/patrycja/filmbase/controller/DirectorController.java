@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,33 +78,42 @@ public class DirectorController {
 
         } else if (action.equalsIgnoreCase("rate")) {
 
-            if ((rating < 0) || (rating > 10)) { //TODO: action when rating==null
-                throw new InvalidParamException("Your rating must fall between 0 and 10!");
-            } else if (user.getRatedDirectors().containsKey(director.getId())) {
-                throw new DuplicateException("You've already rated this film!");
+            try {
+                if ((rating < 0) || (rating > 10)) {
+                    throw new InvalidParamException("Your rating must fall between 0 and 10!");
+                } else if (user.getRatedDirectors().containsKey(director.getId())) {
+                    throw new DuplicateException("You've already rated this director!");
+                }
+                director.rate(rating);
+                directorRepository.save(director);
+                user.getRatedDirectors().put(director.getId(), rating);
+                userRepository.save(user);
+                return new DirectorDTO(director);
+            } catch (NullPointerException ex) {
+                throw new InvalidParamException("You need to insert your rating!");
             }
-            director.rate(rating);
-            directorRepository.save(director);
-            user.getRatedActors().put(director.getId(), rating);
-            userRepository.save(user);
-            return new DirectorDTO(director);
 
-        } else if (action.equalsIgnoreCase("update")) { //TODO: date validation
+        } else if (action.equalsIgnoreCase("update")) {
 
             if (director.getDateOfBirth() != null) {
                 throw new AlreadyUpToDateException("All director's data is up to date!");
             }
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-            Director updatedDirector = new Director(
-                    director.getFirstName(),
-                    director.getLastName(),
-                    LocalDate.parse(dateOfBirth, formatter),
-                    director.getFilms()
-            );
-            directorRepository.setDateOfBirthById(LocalDate.parse(dateOfBirth, formatter), id);
-            DirectorDTO directorDTO = new DirectorDTO(updatedDirector);
-            directorDTO.setId(id);
-            return directorDTO;
+            try {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                Director updatedDirector = new Director(
+                        director.getFirstName(),
+                        director.getLastName(),
+                        LocalDate.parse(dateOfBirth, formatter),
+                        director.getFilms()
+                );
+                directorRepository.setDateOfBirthById(LocalDate.parse(dateOfBirth, formatter), id);
+                DirectorDTO directorDTO = new DirectorDTO(updatedDirector);
+                directorDTO.setId(id);
+                return directorDTO;
+            } catch (NullPointerException ex) {
+                throw new InvalidParamException("You need to insert date!");
+            } catch (DateTimeParseException dex) {
+                throw new InvalidParamException("Invalid date format! The pattern should be: \"dd-MM-yyyy\"");            }
 
         } else {
             throw new InvalidParamException("Invalid action request!");

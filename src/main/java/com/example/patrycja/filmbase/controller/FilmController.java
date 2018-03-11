@@ -89,6 +89,7 @@ public class FilmController {
     public HttpEntity<FilmDTO> processFilm(@RequestParam(value = "action") String action,
                                            @RequestParam(value = "rating", required = false) Double rating,
                                            @PathVariable("id") long id) {
+
         Object principal = SecurityContextHolder
                 .getContext()
                 .getAuthentication()
@@ -96,28 +97,39 @@ public class FilmController {
         String username = ((UserDetails) principal).getUsername();
         User user = userRepository.findByUsername(username);
         Film film = filmRepository.findById(id);
+
         if (action.equalsIgnoreCase("favourite")) {
+
             if (user.getFavFilms().contains(film)) {
                 throw new DuplicateException("This film is already on your list!");
             }
             user.getFavFilms().add(film);
             userRepository.save(user);
+
         } else if (action.equalsIgnoreCase("wishlist")) {
+
             if (user.getFilmWishlist().contains(film)) {
                 throw new DuplicateException("This film is already on your list!");
             }
             user.getFilmWishlist().add(film);
             userRepository.save(user);
+
         } else if (action.equalsIgnoreCase("rate")) {
-            if ((rating < 0) || (rating > 10)) { //TODO: action when rating==null
-                throw new InvalidParamException("Your rating must fall between 0 and 10!");
-            } else if (user.getRatedFilms().containsKey(film.getId())) {
-                throw new DuplicateException("You've already rated this film!");
+
+            try {
+                if ((rating < 0) || (rating > 10)) {
+                    throw new InvalidParamException("Your rating must fall between 0 and 10!");
+                } else if (user.getRatedFilms().containsKey(film.getId())) {
+                    throw new DuplicateException("You've already rated this film!");
+                }
+                film.rate(rating);
+                filmRepository.save(film);
+                user.getRatedFilms().put(film.getId(), rating);
+                userRepository.save(user);
+            } catch (NullPointerException ex) {
+                throw new InvalidParamException("You need to insert your rating!");
             }
-            film.rate(rating);
-            filmRepository.save(film);
-            user.getRatedFilms().put(film.getId(), rating);
-            userRepository.save(user);
+
         } else {
             throw new InvalidParamException("Invalid action request!");
         }
