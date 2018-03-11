@@ -52,7 +52,7 @@ public class DirectorController {
     }
 
     @PostMapping("/directors/{id}")
-    @ResponseStatus(HttpStatus.OK) //TODO: test
+    @ResponseStatus(HttpStatus.OK)
     public DirectorDTO updateDirector(@RequestParam(value = "action") String action,
                                       @RequestParam(value = "rating", required = false) Double rating,
                                       @RequestParam(value = "birthday", required = false) String dateOfBirth,
@@ -77,10 +77,10 @@ public class DirectorController {
 
         } else if (action.equalsIgnoreCase("rate")) {
 
-            if (user.getRatedActors().containsKey(director.getId())) {
-                throw new DuplicateException("You've already rated this actor!");
-            } else if ((rating < 0) || (rating > 10)) { //TODO: action when rating==null
+            if ((rating < 0) || (rating > 10)) { //TODO: action when rating==null
                 throw new InvalidParamException("Your rating must fall between 0 and 10!");
+            } else if (user.getRatedDirectors().containsKey(director.getId())) {
+                throw new DuplicateException("You've already rated this film!");
             }
             director.rate(rating);
             directorRepository.save(director);

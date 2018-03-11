@@ -37,7 +37,7 @@ public class RegisterUserTest {
     }
 
     @Test
-    public void RegisterValidUser() throws Exception {
+    public void registerValidUser() throws Exception {
         Gson gson = new Gson();
         this.mockMvc.perform(post("/register")
                 .contentType(MediaType.APPLICATION_JSON)

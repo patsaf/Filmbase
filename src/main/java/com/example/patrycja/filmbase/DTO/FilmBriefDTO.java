@@ -12,6 +12,13 @@ public class FilmBriefDTO {
     public FilmBriefDTO() {
     }
 
+    public FilmBriefDTO(FilmDTO film) {
+        this.id = film.getId();
+        this.title = film.getTitle();
+        this.productionYear = film.getProductionYear();
+        this.rate = film.getRate();
+    }
+
     public FilmBriefDTO(Film film) {
         this.id = film.getId();
         this.title = film.getTitle();

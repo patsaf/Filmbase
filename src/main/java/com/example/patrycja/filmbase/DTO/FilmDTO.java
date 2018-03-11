@@ -14,6 +14,7 @@ public class FilmDTO {
     private int productionYear;
     private List<String> cast;
     private double rate;
+    private long count;
 
     public FilmDTO() {
     }
@@ -28,6 +29,15 @@ public class FilmDTO {
         film.getCast()
                 .forEach(actor -> cast.add(actor.getFirstName() + " " + actor.getLastName()));
         this.rate = film.getRate();
+        this.count = film.getCount();
+    }
+
+    public long getCount() {
+        return count;
+    }
+
+    public void setCount(long count) {
+        this.count = count;
     }
 
     public long getId() {
@@ -92,7 +102,8 @@ public class FilmDTO {
                 types.equals(filmDTO.getTypes()) &&
                 cast.equals(filmDTO.getCast()) &&
                 productionYear == filmDTO.getProductionYear() &&
-                rate == filmDTO.getRate()) {
+                rate == filmDTO.getRate() &&
+                count == filmDTO.getCount()) {
             return true;
         }
         return false;

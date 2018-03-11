@@ -64,7 +64,7 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @PostMapping("/users/{id}") //TODO: test
+    @PostMapping("/users/{id}")
     public HttpEntity<UserDTO> upgradeToAdmin(@PathVariable("id") long id) {
         Object principal = SecurityContextHolder
                 .getContext()
@@ -75,6 +75,9 @@ public class UserController {
                 .findByUsername(username)
                 .isAdmin()) {
             User user = userRepository.findById(id);
+            if(user==null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
             user.makeAdmin();
             userRepository.save(user);
             return ResponseEntity.ok(new UserDTO(user));

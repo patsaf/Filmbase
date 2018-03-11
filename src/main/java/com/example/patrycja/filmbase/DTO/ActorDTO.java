@@ -15,6 +15,7 @@ public class ActorDTO {
     private LocalDate dateOfBirth;
     private List<FilmBriefDTO> films;
     private double rate;
+    private long count;
 
     public ActorDTO() {
     }
@@ -27,6 +28,7 @@ public class ActorDTO {
         this.dateOfBirth = dateOfBirth;
         this.films = films;
         this.rate = rate;
+        count = 0;
     }
 
     public ActorDTO(Actor actor) {
@@ -38,6 +40,15 @@ public class ActorDTO {
         actor.getFilms()
                 .forEach(film -> films.add(new FilmBriefDTO(film)));
         this.rate = actor.getRate();
+        this.count = actor.getCount();
+    }
+
+    public long getCount() {
+        return count;
+    }
+
+    public void setCount(long count) {
+        this.count = count;
     }
 
     public long getId() {
@@ -92,8 +103,8 @@ public class ActorDTO {
         if(firstName.equals(actorDTO.getFirstName()) &&
                 lastName.equals(actorDTO.getLastName()) &&
                 dateOfBirth == actorDTO.getDateOfBirth() &&
-                films.equals(actorDTO.getFilms()) &&
-                rate == actorDTO.getRate()) {
+                rate == actorDTO.getRate() &&
+                count == actorDTO.getCount()) {
             return true;
         }
         return false;

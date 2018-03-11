@@ -62,12 +62,14 @@ public class UpdateDirectorDateOfBirthTest extends FillBaseTemplate {
         });
     }
 
-    @Test //TODO: TEST TEMPORARILY NOT WORKING
+    @Test
     @WithMockUser(username = "test", password = "test", roles = {"USER"})
     public void updateDirectorDateOfBirth() throws Exception {
+        String action = "update";
+        String birthday = "21-01-1996";
         this.mockMvc.perform(post("/directors/{id}", 1)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(gsonSerialize.toJson(updateRequest)))
+                .param("action", action)
+                .param("birthday", birthday))
                 .andExpect(status().isOk());
     }
 }

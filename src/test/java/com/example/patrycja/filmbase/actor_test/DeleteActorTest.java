@@ -1,7 +1,5 @@
-package com.example.patrycja.filmbase.user_test;
+package com.example.patrycja.filmbase.actor_test;
 
-import com.example.patrycja.filmbase.DTO.UserDTO;
-import com.example.patrycja.filmbase.request.SignUpRequest;
 import com.example.patrycja.filmbase.template.FillBaseTemplate;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,25 +8,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-public class ReadAllUsersTest extends FillBaseTemplate {
+public class DeleteActorTest extends FillBaseTemplate {
 
     @Autowired
     private WebApplicationContext context;
@@ -42,18 +39,20 @@ public class ReadAllUsersTest extends FillBaseTemplate {
                 .apply(springSecurity())
                 .build();
         setupParser();
-        initUsers();
-        postUsers();
+        initFilms();
+        postFilms();
     }
 
-    private void postUsers() {
+    @WithMockUser(username = "test", password = "test", roles = {"USER"})
+    protected void postFilms() {
         List<String> jsons = new ArrayList<>();
-        userRequests.forEach(userRequest -> jsons.add(gsonSerialize.toJson(userRequest)));
+        createdRequests.forEach(filmRequest -> jsons.add(gsonSerialize.toJson(filmRequest)));
         jsons.forEach(json -> {
             try {
-                mockMvc.perform(post("/register")
+                this.mockMvc.perform(post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(json));
+                        .content(json)
+                );
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -61,21 +60,12 @@ public class ReadAllUsersTest extends FillBaseTemplate {
     }
 
     @Test
-    @WithMockUser(username = "test", password = "test", roles = {"USER"})
-    public void checkIfResponseContainsAddedUsers() throws Exception {
-        MvcResult mvcResult = this.mockMvc.perform(get("/users")
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn();
+    @WithUserDetails("admin")
+    public void deleteFilm() throws Exception {
+        this.mockMvc.perform(delete("/actors/{id}", 2))
+                .andExpect(status().isOk());
 
-        String contentAsString = mvcResult
-                .getResponse()
-                .getContentAsString();
-        List<UserDTO> responseUsers = Arrays.asList(gsonDeserialize.fromJson(contentAsString, UserDTO[].class));
-        for (SignUpRequest userRequest : userRequests) {
-            assertTrue(responseUsers
-                    .stream()
-                    .anyMatch(film -> film.checkIfDataEquals(userRequest.getDTO())));
-        }
+        this.mockMvc.perform(get("/actors/{id}", 2))
+                .andExpect(status().isNotFound());
     }
 }

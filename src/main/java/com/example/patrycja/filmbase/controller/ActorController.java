@@ -87,11 +87,11 @@ public class ActorController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @PostMapping("actors/{id}") //TODO: test
+    @PostMapping("actors/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ActorDTO updateActor(@RequestParam(value = "action") String action,
                                 @RequestParam(value = "rating", required = false) Double rating,
-                                @RequestParam(value = "birthday", required = false) String dateOfBirth,
+                                @RequestParam(value = "birthday", required = false) String birthday,
                                 @PathVariable("id") long id) {
 
         Actor actor = actorRepository.findById(id);
@@ -112,11 +112,10 @@ public class ActorController {
             return new ActorDTO(actor);
 
         } else if (action.equalsIgnoreCase("rate")) {
-
-            if (user.getRatedActors().containsKey(actor.getId())) {
-                throw new DuplicateException("You've already rated this actor!");
-            } else if ((rating < 0) || (rating > 10)) { //TODO: action when rating==null
+            if ((rating < 0) || (rating > 10)) { //TODO: action when rating==null
                 throw new InvalidParamException("Your rating must fall between 0 and 10!");
+            } else if (user.getRatedActors().containsKey(actor.getId())) {
+                throw new DuplicateException("You've already rated this film!");
             }
             actor.rate(rating);
             actorRepository.save(actor);
@@ -133,9 +132,9 @@ public class ActorController {
             Actor updatedActor = new Actor(
                     actor.getFirstName(),
                     actor.getLastName(),
-                    LocalDate.parse(dateOfBirth, formatter),
+                    LocalDate.parse(birthday, formatter),
                     actor.getFilms());
-            actorRepository.setDateOfBirthById(LocalDate.parse(dateOfBirth, formatter), id);
+            actorRepository.setDateOfBirthById(LocalDate.parse(birthday, formatter), id);
             ActorDTO actorDTO = new ActorDTO(updatedActor);
             actorDTO.setId(id);
             return actorDTO;
@@ -145,7 +144,7 @@ public class ActorController {
         }
     }
 
-    @DeleteMapping("actors/{id}") //TODO: test
+    @DeleteMapping("actors/{id}")
     public HttpStatus deleteActor(@PathVariable("id") long id) {
         Object principal = SecurityContextHolder
                 .getContext()

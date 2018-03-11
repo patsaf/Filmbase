@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -193,30 +192,31 @@ public class ErrorTest {
                 .andExpect(status().isConflict());
     }
 
-    @Test //TODO: TEST TEMPORARILY NOT WORKING
+    @Test
     @WithMockUser(username = "test", password = "test", roles = {"USER"})
     public void rejectUnnecessaryUpdate() throws Exception {
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(LocalDate.class, new LocalDateSerializer())
-                .create();
+
+        String action = "update";
+        String birthday = "21-01-1996";
+
         this.mockMvc.perform(post("/directors/{id}", 1)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(gson.toJson(updateRequest)))
+                .param("action", action)
+                .param("birthday", birthday))
                 .andExpect(status().isOk());
 
         this.mockMvc.perform(post("/directors/{id}", 1)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(gson.toJson(updateRequest)))
+                .param("action", action)
+                .param("birthday", birthday))
                 .andExpect(status().isConflict());
 
         this.mockMvc.perform(post("/actors/{id}", 1)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(gson.toJson(updateRequest)))
+                .param("action", action)
+                .param("birthday", birthday))
                 .andExpect(status().isOk());
 
         this.mockMvc.perform(post("/actors/{id}", 1)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(gson.toJson(updateRequest)))
+                .param("action", action)
+                .param("birthday", birthday))
                 .andExpect(status().isConflict());
     }
 
@@ -230,5 +230,36 @@ public class ErrorTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(gson.toJson(nonExistingFilmRequest)))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(username = "test", password = "test", roles = {"USER"})
+    public void rejectInvalidParam() throws Exception {
+        this.mockMvc.perform(post("/films/{id}", 1)
+                .param("action", "random"))
+                .andExpect(status().isBadRequest());
+
+        this.mockMvc.perform(post("/actors/{id}", 1)
+                .param("action", "random"))
+                .andExpect(status().isBadRequest());
+
+        this.mockMvc.perform(post("/directors/{id}", 1)
+                .param("action", "random"))
+                .andExpect(status().isBadRequest());
+
+        this.mockMvc.perform(post("/films/{id}", 1)
+                .param("action", "rate")
+                .param("rating", "12.0"))
+                .andExpect(status().isBadRequest());
+
+        this.mockMvc.perform(post("/actors/{id}", 1)
+                .param("action", "rate")
+                .param("rating", "12.0"))
+                .andExpect(status().isBadRequest());
+
+        this.mockMvc.perform(post("/directors/{id}", 1)
+                .param("action", "rate")
+                .param("rating", "12.0"))
+                .andExpect(status().isBadRequest());
     }
 }
