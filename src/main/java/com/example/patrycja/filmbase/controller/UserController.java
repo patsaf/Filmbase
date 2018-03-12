@@ -101,21 +101,21 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
-    @GetMapping("/users/{id}/favourites") //TODO: test
+    @GetMapping("/users/{id}/favourites")
     @ResponseStatus(HttpStatus.OK)
     public FavouritesDTO findFavourites(@PathVariable("id") long id) {
         User user = userRepository.findById(id);
         return new FavouritesDTO(user);
     }
 
-    @GetMapping("/users/{id}/wishlist") // TODO: test
+    @GetMapping("/users/{id}/wishlist")
     @ResponseStatus(HttpStatus.OK)
     public WishlistDTO findWishlist(@PathVariable("id") long id) {
         User user = userRepository.findById(id);
         return new WishlistDTO(user);
     }
 
-    @DeleteMapping("/users/{id}/favourites") //TODO: test
+    @DeleteMapping("/users/{id}/favourites")
     public HttpEntity<FavouritesDTO> deleteFavourite(@PathVariable("id") long id,
                                                      @RequestParam("action") String action,
                                                      @RequestParam("item") long itemid) {
@@ -166,7 +166,7 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
-    @DeleteMapping("/users/{id}/wishlist") //TODO: test
+    @DeleteMapping("/users/{id}/wishlist")
     public HttpEntity<WishlistDTO> deleteWish(@PathVariable("id") long id,
                                               @RequestParam("item") long itemid) {
         Object principal = SecurityContextHolder
