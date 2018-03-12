@@ -19,6 +19,7 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -63,7 +64,7 @@ public class UserFeaturesTest extends FillBaseTemplate {
 
     @Test
     @WithUserDetails("admin")
-    public void addToFavourites() throws Exception {
+    public void addToFavouritesTest() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(post("/films/{id}", 3)
                 .param("action", "favourite"))
                 .andExpect(status().isOk())
@@ -126,7 +127,7 @@ public class UserFeaturesTest extends FillBaseTemplate {
 
     @Test
     @WithUserDetails("admin")
-    public void addToWishlist() throws Exception {
+    public void addToWishlistTest() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(post("/films/{id}", 3)
                 .param("action", "wishlist"))
                 .andExpect(status().isOk())
@@ -157,7 +158,7 @@ public class UserFeaturesTest extends FillBaseTemplate {
 
     @Test
     @WithUserDetails("admin")
-    public void rate() throws Exception {
+    public void rateTest() throws Exception {
         MvcResult mvcResult3 = this.mockMvc.perform(get("/films/{id}", 3)
                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn();
@@ -232,5 +233,72 @@ public class UserFeaturesTest extends FillBaseTemplate {
                         DirectorDTO.class);
 
         assertTrue(directorDTO.getCount() == (countDirectors + 1));
+    }
+
+    @Test
+    @WithUserDetails("admin")
+    public void wishlistFavouritesMoveTest() throws Exception {
+        this.mockMvc.perform(post("/films/{id}", 4)
+                .param("action", "wishlist"))
+                .andExpect(status().isOk());
+
+        this.mockMvc.perform(post("/films/{id}", 4)
+                .param("action", "favourite"))
+                .andExpect(status().isOk());
+
+        MvcResult mvcResult1 = this.mockMvc.perform(get("/films/{id}", 4)
+                .accept(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        FilmDTO filmDTO = gsonDeserialize.fromJson(mvcResult1
+                        .getResponse()
+                        .getContentAsString(),
+                FilmDTO.class);
+
+        FilmBriefDTO filmBriefDTO = new FilmBriefDTO(filmDTO);
+
+        MvcResult mvcResult = this.mockMvc.perform(get("/users/{id}/wishlist", 1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        WishlistDTO wishlistDTO = gsonDeserialize.fromJson(mvcResult
+                        .getResponse()
+                        .getContentAsString(),
+                WishlistDTO.class);
+
+        assertFalse(wishlistDTO.getFilms().contains(filmBriefDTO));
+
+        this.mockMvc.perform(post("/films/{id}", 3)
+                .param("action", "wishlist"))
+                .andExpect(status().isOk());
+
+        this.mockMvc.perform(post("/users/{id}/wishlist", 1)
+                .param("item", "3"))
+                .andExpect(status().isOk());
+
+        MvcResult mvcResult2 = this.mockMvc.perform(get("/users/{id}/wishlist", 1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        WishlistDTO wishlistDTO1 = gsonDeserialize
+                .fromJson(mvcResult2
+                                .getResponse()
+                                .getContentAsString(),
+                        WishlistDTO.class);
+
+        MvcResult mvcResult3 = this.mockMvc.perform(get("/films/{id}", 3)
+                .accept(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        FilmDTO filmDTO1 = gsonDeserialize
+                .fromJson(mvcResult3
+                                .getResponse()
+                                .getContentAsString(),
+                        FilmDTO.class);
+
+        FilmBriefDTO filmBriefDTO1 = new FilmBriefDTO(filmDTO1);
+
+        assertFalse(wishlistDTO1.getFilms().contains(filmBriefDTO1));
     }
 }

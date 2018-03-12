@@ -102,6 +102,8 @@ public class FilmController {
 
             if (user.getFavFilms().contains(film)) {
                 throw new DuplicateException("This film is already on your list!");
+            } else if(user.getFilmWishlist().contains(film)) {
+                user.getFilmWishlist().remove(film);
             }
             user.getFavFilms().add(film);
             userRepository.save(user);
@@ -110,6 +112,8 @@ public class FilmController {
 
             if (user.getFilmWishlist().contains(film)) {
                 throw new DuplicateException("This film is already on your list!");
+            } else if (user.getFavFilms().contains(film)) {
+                throw new DuplicateException("Seems like you've already seen this film!");
             }
             user.getFilmWishlist().add(film);
             userRepository.save(user);
