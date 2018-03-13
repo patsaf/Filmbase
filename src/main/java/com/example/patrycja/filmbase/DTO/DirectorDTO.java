@@ -89,13 +89,10 @@ public class DirectorDTO {
     }
 
     public Boolean checkIfDataEquals(DirectorDTO directorDTO) {
-        if(firstName.equals(directorDTO.getFirstName()) &&
+        return firstName.equals(directorDTO.getFirstName()) &&
                 lastName.equals(directorDTO.getLastName()) &&
                 dateOfBirth == directorDTO.getDateOfBirth() &&
                 rate == directorDTO.getRate() &&
-                count == directorDTO.getCount()) {
-            return true;
-        }
-        return false;
+                count == directorDTO.getCount();
     }
 }

@@ -97,15 +97,12 @@ public class FilmDTO {
     }
 
     public Boolean checkIfContentEquals(FilmDTO filmDTO) {
-        if (title.equals(filmDTO.getTitle()) &&
+        return title.equals(filmDTO.getTitle()) &&
                 director.equals(filmDTO.getDirector()) &&
                 types.equals(filmDTO.getTypes()) &&
                 cast.equals(filmDTO.getCast()) &&
                 productionYear == filmDTO.getProductionYear() &&
                 rate == filmDTO.getRate() &&
-                count == filmDTO.getCount()) {
-            return true;
-        }
-        return false;
+                count == filmDTO.getCount();
     }
 }

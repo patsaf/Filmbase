@@ -23,7 +23,7 @@ public class Director {
     List<Film> films;
 
     private double rate;
-    private long sum;
+    private double sum;
     private long count;
 
     public Director() {
@@ -70,7 +70,7 @@ public class Director {
         return rate;
     }
 
-    public long getSum() {
+    public double getSum() {
         return sum;
     }
 
@@ -84,13 +84,20 @@ public class Director {
         rate = sum/count;
     }
 
+    public void unrate(double i) {
+        sum = (rate*count) - i;
+        count--;
+        if(count == 0) {
+            rate = 0;
+        } else {
+            rate = sum / count;
+        }
+    }
+
     public Boolean checkIfDataEquals(Director director) {
-        if (firstName.equals(director.getFirstName()) &&
+        return firstName.equals(director.getFirstName()) &&
                 lastName.equals(director.getLastName()) &&
                 dateOfBirth == director.getDateOfBirth() &&
-                rate == director.getRate()) {
-            return true;
-        }
-        return false;
+                rate == director.getRate();
     }
 }

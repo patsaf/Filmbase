@@ -59,11 +59,8 @@ public class FilmBriefDTO {
     }
 
     public Boolean checkIfContentEquals(FilmBriefDTO briefDTO) {
-        if (title.equals(briefDTO.getTitle()) &&
+        return title.equals(briefDTO.getTitle()) &&
                 productionYear == briefDTO.getProductionYear() &&
-                rate == briefDTO.getRate()) {
-            return true;
-        }
-        return false;
+                rate == briefDTO.getRate();
     }
 }

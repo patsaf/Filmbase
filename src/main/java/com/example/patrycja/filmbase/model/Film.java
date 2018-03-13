@@ -28,7 +28,7 @@ public class Film {
     private int productionYear;
 
     private double rate;
-    private long sum;
+    private double sum;
     private long count;
 
     public Film() {
@@ -81,7 +81,7 @@ public class Film {
         return rate;
     }
 
-    public long getSum() {
+    public double getSum() {
         return sum;
     }
 
@@ -95,13 +95,20 @@ public class Film {
         rate = sum/count;
     }
 
+    public void unrate(double i) {
+        sum = (rate*count) - i;
+        count--;
+        if(count == 0) {
+            rate = 0;
+        } else {
+            rate = sum / count;
+        }
+    }
+
     public Boolean checkIfContentEquals(Film film) {
-        if (title.equals(film.getTitle()) &&
+        return title.equals(film.getTitle()) &&
                 director.checkIfDataEquals(film.getDirector()) &&
                 types.equals(film.getTypes()) &&
-                productionYear == film.getProductionYear()) {
-            return true;
-        }
-        return false;
+                productionYear == film.getProductionYear();
     }
 }

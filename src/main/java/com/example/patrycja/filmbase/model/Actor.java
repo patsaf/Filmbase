@@ -23,7 +23,7 @@ public class Actor {
     private List<Film> films;
 
     private double rate;
-    private long sum;
+    private double sum;
     private long count;
 
     public Actor() {
@@ -79,7 +79,7 @@ public class Actor {
         return rate;
     }
 
-    public long getSum() {
+    public double getSum() {
         return sum;
     }
 
@@ -93,13 +93,20 @@ public class Actor {
         rate = sum / count;
     }
 
+    public void unrate(double i) {
+        sum = (rate*count)-i;
+        count--;
+        if(count == 0) {
+            rate = 0;
+        } else {
+            rate = sum / count;
+        }
+    }
+
     public Boolean checkIfDataEquals(Actor actor) {
-        if (firstName.equals(actor.getFirstName()) &&
+        return firstName.equals(actor.getFirstName()) &&
                 lastName.equals(actor.getLastName()) &&
                 dateOfBirth == actor.getDateOfBirth() &&
-                films.equals(actor.getFilms())) {
-            return true;
-        }
-        return false;
+                films.equals(actor.getFilms());
     }
 }

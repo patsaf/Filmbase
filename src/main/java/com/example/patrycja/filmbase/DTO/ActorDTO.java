@@ -100,13 +100,10 @@ public class ActorDTO {
     }
 
     public Boolean checkIfDataEquals(ActorDTO actorDTO) {
-        if(firstName.equals(actorDTO.getFirstName()) &&
+        return firstName.equals(actorDTO.getFirstName()) &&
                 lastName.equals(actorDTO.getLastName()) &&
                 dateOfBirth == actorDTO.getDateOfBirth() &&
                 rate == actorDTO.getRate() &&
-                count == actorDTO.getCount()) {
-            return true;
-        }
-        return false;
+                count == actorDTO.getCount();
     }
 }

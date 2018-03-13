@@ -1,5 +1,7 @@
 package com.example.patrycja.filmbase.user_test;
 
+import com.example.patrycja.filmbase.DTO.FilmBriefDTO;
+import com.example.patrycja.filmbase.DTO.FilmDTO;
 import com.example.patrycja.filmbase.DTO.UserDTO;
 import com.example.patrycja.filmbase.template.FillBaseTemplate;
 import org.junit.Before;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -26,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-public class ReadOneUserTest extends FillBaseTemplate {
+public class AddToWishlistTest extends FillBaseTemplate {
 
     @Autowired
     private WebApplicationContext context;
@@ -40,18 +43,20 @@ public class ReadOneUserTest extends FillBaseTemplate {
                 .apply(springSecurity())
                 .build();
         setupParser();
-        initUsers();
-        postUsers();
+        initFilms();
+        postFilms();
     }
 
-    private void postUsers() {
+    @WithMockUser(username = "test", password = "test", roles = {"USER"})
+    protected void postFilms() {
         List<String> jsons = new ArrayList<>();
-        userRequests.forEach(userRequest -> jsons.add(gsonSerialize.toJson(userRequest)));
+        createdRequests.forEach(filmRequest -> jsons.add(gsonSerialize.toJson(filmRequest)));
         jsons.forEach(json -> {
             try {
-                mockMvc.perform(post("/register")
+                this.mockMvc.perform(post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(json));
+                        .content(json)
+                );
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -59,25 +64,34 @@ public class ReadOneUserTest extends FillBaseTemplate {
     }
 
     @Test
-    @WithMockUser(username = "test", password = "test", roles = {"USER"})
-    public void checkIfResponseContainsUserWithGivenId() throws Exception {
-        for (int i = 1; i <= userRequests.size(); i++) {
-            MvcResult mvcResult = this.mockMvc.perform(get("/users/{id}", i+1)
-                    .accept(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk())
-                    .andReturn();
+    @WithUserDetails("admin")
+    public void addToWishlistTest() throws Exception {
+        MvcResult mvcResult = this.mockMvc.perform(post("/films/{id}", 3)
+                .param("action", "wishlist"))
+                .andExpect(status().isOk())
+                .andReturn();
 
-            UserDTO responseUser = gsonDeserialize.fromJson(mvcResult
-                            .getResponse()
-                            .getContentAsString(),
-                    UserDTO.class
-            );
-            assertTrue(responseUser
-                    .checkIfDataEquals(userRequests
-                            .get(i - 1)
-                            .getDTO()
-                    ));
-        }
+        FilmDTO filmDTO = gsonDeserialize
+                .fromJson(mvcResult
+                                .getResponse()
+                                .getContentAsString(),
+                        FilmDTO.class);
+
+        MvcResult mvcResult1 = this.mockMvc.perform(get("/users/{id}", 1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        UserDTO userDTO = gsonDeserialize
+                .fromJson(mvcResult1
+                                .getResponse()
+                                .getContentAsString(),
+                        UserDTO.class);
+
+        assertTrue(userDTO
+                .getFilmWishlist()
+                .stream()
+                .anyMatch(film -> film.checkIfContentEquals(new FilmBriefDTO(filmDTO))));
     }
 
 }
