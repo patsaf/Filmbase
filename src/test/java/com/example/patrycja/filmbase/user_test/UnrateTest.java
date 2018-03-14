@@ -44,25 +44,7 @@ public class UnrateTest extends FillBaseTemplate {
                 .apply(springSecurity())
                 .build();
         setupParser();
-        initFilms();
-        postFilms();
         rate();
-    }
-
-    @WithMockUser(username = "test", password = "test", roles = {"USER"})
-    protected void postFilms() {
-        List<String> jsons = new ArrayList<>();
-        createdRequests.forEach(filmRequest -> jsons.add(gsonSerialize.toJson(filmRequest)));
-        jsons.forEach(json -> {
-            try {
-                this.mockMvc.perform(post("/films")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json)
-                );
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
     }
 
     @WithUserDetails("admin")
@@ -82,7 +64,7 @@ public class UnrateTest extends FillBaseTemplate {
 
     @Test
     @WithUserDetails("admin")
-    public void unrateFilmTest() throws Exception {
+    public void unrateFilm() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(get("/films/{id}", 1)
                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn();
@@ -111,7 +93,7 @@ public class UnrateTest extends FillBaseTemplate {
 
     @Test
     @WithUserDetails("admin")
-    public void unrateActorTest() throws Exception {
+    public void unrateActor() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(get("/actors/{id}", 1)
                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn();
@@ -140,7 +122,7 @@ public class UnrateTest extends FillBaseTemplate {
 
     @Test
     @WithUserDetails("admin")
-    public void unrateDirectorTest() throws Exception {
+    public void unrateDirector() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(get("/directors/{id}", 1)
                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn();

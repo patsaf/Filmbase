@@ -42,24 +42,6 @@ public class AddToFavouritesTest extends FillBaseTemplate {
                 .apply(springSecurity())
                 .build();
         setupParser();
-        initFilms();
-        postFilms();
-    }
-
-    @WithMockUser(username = "test", password = "test", roles = {"USER"})
-    protected void postFilms() {
-        List<String> jsons = new ArrayList<>();
-        createdRequests.forEach(filmRequest -> jsons.add(gsonSerialize.toJson(filmRequest)));
-        jsons.forEach(json -> {
-            try {
-                this.mockMvc.perform(post("/films")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json)
-                );
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
     }
 
     private UserDTO getUser() throws Exception {
@@ -77,7 +59,7 @@ public class AddToFavouritesTest extends FillBaseTemplate {
 
     @Test
     @WithUserDetails("admin")
-    public void addFilmToFavouritesTest() throws Exception {
+    public void addFilmToFavourites() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(post("/films/{id}", 3)
                 .param("action", "favourite"))
                 .andExpect(status().isOk())
@@ -97,7 +79,7 @@ public class AddToFavouritesTest extends FillBaseTemplate {
 
     @Test
     @WithUserDetails("admin")
-    public void addActorToFavouritesTest() throws Exception {
+    public void addActorToFavourites() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(post("/actors/{id}", 3)
                 .param("action", "favourite"))
                 .andExpect(status().isOk())
@@ -117,7 +99,7 @@ public class AddToFavouritesTest extends FillBaseTemplate {
 
     @Test
     @WithUserDetails("admin")
-    public void addDirectorToFavouritesTest() throws Exception {
+    public void addDirectorToFavourites() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(post("/directors/{id}", 3)
                 .param("action", "favourite"))
                 .andExpect(status().isOk())

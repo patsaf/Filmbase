@@ -3,6 +3,7 @@ package com.example.patrycja.filmbase.controller;
 import com.example.patrycja.filmbase.DTO.DirectorDTO;
 import com.example.patrycja.filmbase.exception.AlreadyUpToDateException;
 import com.example.patrycja.filmbase.exception.DuplicateException;
+import com.example.patrycja.filmbase.exception.InvalidIdException;
 import com.example.patrycja.filmbase.exception.InvalidParamException;
 import com.example.patrycja.filmbase.model.Director;
 import com.example.patrycja.filmbase.model.User;
@@ -49,7 +50,7 @@ public class DirectorController {
         if (director != null) {
             return ResponseEntity.ok(new DirectorDTO(director));
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        throw new InvalidIdException();
     }
 
     @PostMapping("/directors/{id}")
@@ -60,6 +61,11 @@ public class DirectorController {
                                       @PathVariable("id") long id) {
 
         Director director = directorRepository.findById(id);
+
+        if(director==null) {
+            throw new InvalidIdException();
+        }
+
         Object principal = SecurityContextHolder
                 .getContext()
                 .getAuthentication()

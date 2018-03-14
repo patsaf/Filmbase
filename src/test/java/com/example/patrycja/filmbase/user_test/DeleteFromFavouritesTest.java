@@ -42,29 +42,11 @@ public class DeleteFromFavouritesTest extends FillBaseTemplate {
                 .apply(springSecurity())
                 .build();
         setupParser();
-        initFilms();
-        postFilms();
-    }
-
-    @WithMockUser(username = "test", password = "test", roles = {"USER"})
-    protected void postFilms() {
-        List<String> jsons = new ArrayList<>();
-        createdRequests.forEach(filmRequest -> jsons.add(gsonSerialize.toJson(filmRequest)));
-        jsons.forEach(json -> {
-            try {
-                this.mockMvc.perform(post("/films")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json)
-                );
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
     }
 
     @Test
     @WithUserDetails("admin")
-    public void deleteFromFavouritesTest() throws Exception {
+    public void deleteFilmFromFavourites() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(get("/films/{id}", 3)
                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn();

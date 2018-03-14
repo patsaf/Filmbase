@@ -38,30 +38,12 @@ public class AddActorToCastTest extends FillBaseTemplate {
                 .apply(springSecurity())
                 .build();
         setupParser();
-        initFilms();
-        postFilms();
         actorRequest = new AddActorRequest("Laurie", "Metcalf");
-    }
-
-    @WithMockUser(username = "test", password = "test", roles = {"USER"})
-    protected void postFilms() {
-        List<String> jsons = new ArrayList<>();
-        createdRequests.forEach(filmRequest -> jsons.add(gsonSerialize.toJson(filmRequest)));
-        jsons.forEach(json -> {
-            try {
-                this.mockMvc.perform(post("/films")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json)
-                );
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
     }
 
     @Test
     @WithMockUser(username = "test", password = "test", roles = {"USER"})
-    public void addNewActorToCastTest() throws Exception {
+    public void addNewActorToCast() throws Exception {
         this.mockMvc.perform(post("/films/{id}/cast", 5)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(gsonSerialize.toJson(actorRequest)))

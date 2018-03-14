@@ -1,8 +1,10 @@
-package com.example.patrycja.filmbase.actor_test;
+package com.example.patrycja.filmbase.error_test;
 
 import com.example.patrycja.filmbase.DTO.FilmBriefDTO;
 import com.example.patrycja.filmbase.request.AddActorRequest;
-import com.example.patrycja.filmbase.template.FillBaseTemplate;
+import com.example.patrycja.filmbase.template.LocalDateSerializer;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,13 +28,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-public class AddNewActorTest extends FillBaseTemplate {
+public class NonExistingFilmTest {
 
     @Autowired
     private WebApplicationContext context;
 
     private MockMvc mockMvc;
-    private AddActorRequest actorRequest;
+
+    private AddActorRequest nonExistingFilmRequest;
 
     @Before
     public void init() {
@@ -40,23 +43,30 @@ public class AddNewActorTest extends FillBaseTemplate {
                 .webAppContextSetup(context)
                 .apply(springSecurity())
                 .build();
-        setupParser();
-        initFilms();
-        List<FilmBriefDTO> filmBriefDTOList = new ArrayList<>();
+
+        List<FilmBriefDTO> invalidList = new ArrayList<>();
         FilmBriefDTO film1 = new FilmBriefDTO();
-        film1.setTitle("Lady Bird");
-        film1.setProductionYear(2017);
-        filmBriefDTOList.add(film1);
-        actorRequest = new AddActorRequest("Laurie", "Metcalf",
-                filmBriefDTOList, LocalDate.of(1955, Month.MAY, 26));
+        film1.setTitle("Leon");
+        film1.setProductionYear(1994);
+        FilmBriefDTO film2 = new FilmBriefDTO();
+        film2.setTitle("Cinderella");
+        film2.setProductionYear(2015);
+        invalidList.add(film1);
+        invalidList.add(film2);
+
+        nonExistingFilmRequest = new AddActorRequest("Helena", "Bohnam-Carter",
+                invalidList, LocalDate.of(1965, Month.MAY, 26));
     }
 
     @Test
-    @WithMockUser(username = "test", password = "test", roles = "USER")
-    public void addValidActor() throws Exception {
+    @WithMockUser(username = "test", password = "test", roles = {"USER"})
+    public void rejectActorWithNonExistingFilm() throws Exception {
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, new LocalDateSerializer())
+                .create();
         this.mockMvc.perform(post("/actors")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(gsonSerialize.toJson(actorRequest)))
-                .andExpect(status().isCreated());
+                .content(gson.toJson(nonExistingFilmRequest)))
+                .andExpect(status().isNotFound());
     }
 }

@@ -43,29 +43,11 @@ public class RateTest extends FillBaseTemplate {
                 .apply(springSecurity())
                 .build();
         setupParser();
-        initFilms();
-        postFilms();
-    }
-
-    @WithMockUser(username = "test", password = "test", roles = {"USER"})
-    protected void postFilms() {
-        List<String> jsons = new ArrayList<>();
-        createdRequests.forEach(filmRequest -> jsons.add(gsonSerialize.toJson(filmRequest)));
-        jsons.forEach(json -> {
-            try {
-                this.mockMvc.perform(post("/films")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json)
-                );
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
     }
 
     @Test
     @WithUserDetails("admin")
-    public void rateFilmTest() throws Exception {
+    public void rateFilm() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(get("/films/{id}", 3)
                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn();
@@ -94,7 +76,7 @@ public class RateTest extends FillBaseTemplate {
 
     @Test
     @WithUserDetails("admin")
-    public void rateActorTest() throws Exception {
+    public void rateActor() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(get("/actors/{id}", 3)
                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn();
@@ -123,7 +105,7 @@ public class RateTest extends FillBaseTemplate {
 
     @Test
     @WithUserDetails("admin")
-    public void rateDirectorTest() throws Exception {
+    public void rateDirector() throws Exception {
         MvcResult mvcResult5 = this.mockMvc.perform(get("/directors/{id}", 1)
                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn();

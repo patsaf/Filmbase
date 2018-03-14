@@ -41,25 +41,8 @@ public class UpdateDirectorDateOfBirthTest extends FillBaseTemplate {
                 .build();
         setupParser();
         initFilms();
-        postFilms();
         updateRequest = new UpdateDateOfBirthRequest(
                 LocalDate.of(1978, Month.JANUARY, 13));
-    }
-
-    @WithMockUser(username = "test", password = "test", roles = {"USER"})
-    protected void postFilms() {
-        List<String> jsons = new ArrayList<>();
-        createdRequests.forEach(filmRequest -> jsons.add(gsonSerialize.toJson(filmRequest)));
-        jsons.forEach(json -> {
-            try {
-                this.mockMvc.perform(post("/films")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json)
-                );
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
     }
 
     @Test

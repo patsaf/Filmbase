@@ -96,6 +96,7 @@ public class FilmDTO {
         this.rate = rate;
     }
 
+
     public Boolean checkIfContentEquals(FilmDTO filmDTO) {
         return title.equals(filmDTO.getTitle()) &&
                 director.equals(filmDTO.getDirector()) &&

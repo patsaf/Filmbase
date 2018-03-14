@@ -1,9 +1,6 @@
 package com.example.patrycja.filmbase;
 
-import com.example.patrycja.filmbase.exception.AlreadyUpToDateException;
-import com.example.patrycja.filmbase.exception.DuplicateException;
-import com.example.patrycja.filmbase.exception.FilmDoesntExistException;
-import com.example.patrycja.filmbase.exception.InvalidParamException;
+import com.example.patrycja.filmbase.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -32,5 +29,10 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = InvalidParamException.class)
     public ResponseEntity<String> handleInvalidParam(InvalidParamException ex, WebRequest request) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = InvalidIdException.class)
+    public ResponseEntity<String> handleInvalidId(InvalidIdException ex, WebRequest request) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

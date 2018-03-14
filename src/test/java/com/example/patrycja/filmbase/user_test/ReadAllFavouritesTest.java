@@ -44,23 +44,6 @@ public class ReadAllFavouritesTest extends FillBaseTemplate {
                 .build();
         setupParser();
         initFilms();
-        postFilms();
-    }
-
-    @WithMockUser(username = "test", password = "test", roles = {"USER"})
-    protected void postFilms() {
-        List<String> jsons = new ArrayList<>();
-        createdRequests.forEach(filmRequest -> jsons.add(gsonSerialize.toJson(filmRequest)));
-        jsons.forEach(json -> {
-            try {
-                this.mockMvc.perform(post("/films")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json)
-                );
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
     }
 
     @WithUserDetails("admin")
@@ -73,7 +56,7 @@ public class ReadAllFavouritesTest extends FillBaseTemplate {
 
     @Test
     @WithUserDetails("admin")
-    public void readAllFavouritesTest() throws Exception {
+    public void readAllFavourites() throws Exception {
         addToFavourites();
 
         MvcResult mvcResult = this.mockMvc.perform(get("/users/{id}/favourites", 1)

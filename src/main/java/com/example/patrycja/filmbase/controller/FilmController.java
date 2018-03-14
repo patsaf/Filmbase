@@ -1,8 +1,8 @@
 package com.example.patrycja.filmbase.controller;
 
-import com.example.patrycja.filmbase.DTO.ActorDTO;
 import com.example.patrycja.filmbase.DTO.FilmDTO;
 import com.example.patrycja.filmbase.exception.DuplicateException;
+import com.example.patrycja.filmbase.exception.InvalidIdException;
 import com.example.patrycja.filmbase.exception.InvalidParamException;
 import com.example.patrycja.filmbase.model.Actor;
 import com.example.patrycja.filmbase.model.Director;
@@ -76,13 +76,59 @@ public class FilmController {
         return allDTOs;
     }
 
+    @PostMapping("/films")
+    @ResponseStatus(HttpStatus.CREATED)
+    public FilmDTO addFilm(@Valid @RequestBody AddFilmRequest addFilmRequest) {
+
+        Director director = directorRepository.findByFirstNameAndLastName(
+                addFilmRequest.getDirectorFirstName(),
+                addFilmRequest.getDirectorLastName());
+
+        if (director == null) {
+            director = new Director(
+                    addFilmRequest.getDirectorFirstName(),
+                    addFilmRequest.getDirectorLastName());
+            directorRepository.save(director);
+        }
+
+        List<Actor> cast = new ArrayList<>();
+        for (AddActorRequest actorRequest : addFilmRequest.getActorRequests()) {
+            Actor actor = actorRepository.findByFirstNameAndLastName(
+                    actorRequest.getFirstName(),
+                    actorRequest.getLastName());
+
+            if (actor == null) {
+                actor = new Actor(
+                        actorRequest.getFirstName(),
+                        actorRequest.getLastName());
+                actorRepository.save(actor);
+            }
+            cast.add(actor);
+        }
+
+        Film newFilm = new Film(
+                addFilmRequest.getTitle(),
+                director,
+                addFilmRequest.getTypes(),
+                addFilmRequest.getProductionYear(),
+                cast);
+
+        for (Film film : filmRepository.findAll()) {
+            if (newFilm.checkIfContentEquals(film)) {
+                throw new DuplicateException("Film already exists!");
+            }
+        }
+        filmRepository.save(newFilm);
+        return new FilmDTO(newFilm);
+    }
+
     @GetMapping("/films/{id}")
     public HttpEntity<FilmDTO> findFilm(@PathVariable("id") long id) {
         Film film = filmRepository.findById(id);
         if (film != null) {
             return ResponseEntity.ok(new FilmDTO(film));
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        throw new InvalidIdException();
     }
 
     @PostMapping("/films/{id}")
@@ -97,6 +143,10 @@ public class FilmController {
         String username = ((UserDetails) principal).getUsername();
         User user = userRepository.findByUsername(username);
         Film film = filmRepository.findById(id);
+
+        if(film==null) {
+            throw new InvalidIdException();
+        }
 
         if (action.equalsIgnoreCase("favourite")) {
 
@@ -151,6 +201,11 @@ public class FilmController {
                 .findByUsername(username)
                 .isAdmin()) {
             Film film = filmRepository.findById(id);
+
+            if(film==null) {
+                throw new InvalidIdException();
+            }
+
             List<Actor> castById = filmRepository.getCastById(id);
             filmRepository.delete(film);
             if (film
@@ -167,92 +222,5 @@ public class FilmController {
             return HttpStatus.OK;
         }
         return HttpStatus.FORBIDDEN;
-    }
-
-    @PostMapping("/films")
-    @ResponseStatus(HttpStatus.CREATED)
-    public FilmDTO addFilm(@Valid @RequestBody AddFilmRequest addFilmRequest) {
-
-        Director director = directorRepository.findByFirstNameAndLastName(
-                addFilmRequest.getDirectorFirstName(),
-                addFilmRequest.getDirectorLastName());
-
-        if (director == null) {
-            director = new Director(
-                    addFilmRequest.getDirectorFirstName(),
-                    addFilmRequest.getDirectorLastName());
-            directorRepository.save(director);
-        }
-
-        List<Actor> cast = new ArrayList<>();
-        for (AddActorRequest actorRequest : addFilmRequest.getActorRequests()) {
-            Actor actor = actorRepository.findByFirstNameAndLastName(
-                    actorRequest.getFirstName(),
-                    actorRequest.getLastName());
-
-            if (actor == null) {
-                actor = new Actor(
-                        actorRequest.getFirstName(),
-                        actorRequest.getLastName());
-                actorRepository.save(actor);
-            }
-            cast.add(actor);
-        }
-
-        Film newFilm = new Film(
-                addFilmRequest.getTitle(),
-                director,
-                addFilmRequest.getTypes(),
-                addFilmRequest.getProductionYear(),
-                cast);
-
-        for (Film film : filmRepository.findAll()) {
-            if (newFilm.checkIfContentEquals(film)) {
-                throw new DuplicateException("Film already exists!");
-            }
-        }
-        filmRepository.save(newFilm);
-        return new FilmDTO(newFilm);
-    }
-
-    @GetMapping("/films/{id}/cast")
-    public List<ActorDTO> getFilmCast(@PathVariable("id") long id) {
-        Film film = filmRepository.findById(id);
-        List<ActorDTO> actorDTOS = new ArrayList<>();
-        film.getCast()
-                .forEach(actor -> actorDTOS.add(new ActorDTO(actor)));
-        return actorDTOS;
-    }
-
-    @PostMapping("/films/{id}/cast")
-    public List<ActorDTO> addActorToCast(@Valid @RequestBody AddActorRequest actorRequest,
-                                         @PathVariable("id") long id) {
-        Film film = filmRepository.findById(id);
-        Actor actor = actorRepository.findByFirstNameAndLastName(
-                actorRequest.getFirstName(),
-                actorRequest.getLastName());
-        Actor finalActor = actor;
-        if (actor == null) {
-            List<Film> films = new ArrayList<>();
-            films.add(film);
-            actor = new Actor(actorRequest.getFirstName(),
-                    actorRequest.getLastName(),
-                    actorRequest.getDateOfBirth(),
-                    films);
-        } else if (film.getCast()
-                .stream()
-                .anyMatch(oldActor -> oldActor.getFirstName().equals(finalActor.getFirstName()) &&
-                        oldActor.getLastName().equals(finalActor.getLastName()))) {
-            throw new DuplicateException("Actor already in cast!");
-        }
-        actorRepository.save(actor);
-        List<Actor> cast = film.getCast();
-        cast.add(actor);
-        filmRepository.save(film);
-        List<ActorDTO> actorDTOS = new ArrayList<>();
-        for (Actor actor1 : cast) {
-            actorDTOS.add(new ActorDTO(actor1));
-        }
-        return actorDTOS;
     }
 }

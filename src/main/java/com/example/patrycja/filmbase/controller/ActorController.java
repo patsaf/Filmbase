@@ -2,10 +2,7 @@ package com.example.patrycja.filmbase.controller;
 
 import com.example.patrycja.filmbase.DTO.ActorDTO;
 import com.example.patrycja.filmbase.DTO.FilmBriefDTO;
-import com.example.patrycja.filmbase.exception.AlreadyUpToDateException;
-import com.example.patrycja.filmbase.exception.DuplicateException;
-import com.example.patrycja.filmbase.exception.FilmDoesntExistException;
-import com.example.patrycja.filmbase.exception.InvalidParamException;
+import com.example.patrycja.filmbase.exception.*;
 import com.example.patrycja.filmbase.model.Actor;
 import com.example.patrycja.filmbase.model.Film;
 import com.example.patrycja.filmbase.model.User;
@@ -85,7 +82,7 @@ public class ActorController {
         if (actor != null) {
             return ResponseEntity.ok(new ActorDTO(actor));
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        throw new InvalidIdException();
     }
 
     @PostMapping("actors/{id}")
@@ -96,6 +93,11 @@ public class ActorController {
                                 @PathVariable("id") long id) {
 
         Actor actor = actorRepository.findById(id);
+
+        if(actor==null) {
+            throw new InvalidIdException();
+        }
+
         Object principal = SecurityContextHolder
                 .getContext()
                 .getAuthentication()
@@ -167,6 +169,11 @@ public class ActorController {
                 .findByUsername(username)
                 .isAdmin()) {
             Actor actor = actorRepository.findById(id);
+
+            if(actor==null) {
+                throw new InvalidIdException();
+            }
+
             actorRepository.getFilmsById(id)
                     .stream()
                     .forEach(film -> film.getCast().remove(actor));

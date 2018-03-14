@@ -43,29 +43,11 @@ public class MoveFromWishlistToFavouriteTest extends FillBaseTemplate {
                 .apply(springSecurity())
                 .build();
         setupParser();
-        initFilms();
-        postFilms();
-    }
-
-    @WithMockUser(username = "test", password = "test", roles = {"USER"})
-    protected void postFilms() {
-        List<String> jsons = new ArrayList<>();
-        createdRequests.forEach(filmRequest -> jsons.add(gsonSerialize.toJson(filmRequest)));
-        jsons.forEach(json -> {
-            try {
-                this.mockMvc.perform(post("/films")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json)
-                );
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
     }
 
     @Test
     @WithUserDetails("admin")
-    public void wishlistFavouritesMoveTest() throws Exception {
+    public void wishlistFavouritesMove() throws Exception {
         this.mockMvc.perform(post("/films/{id}", 4) //adds film to wishlist
                 .param("action", "wishlist"))
                 .andExpect(status().isOk());
@@ -101,7 +83,7 @@ public class MoveFromWishlistToFavouriteTest extends FillBaseTemplate {
 
     @Test
     @WithUserDetails("admin")
-    public void wishlistFavouriteMoveViaUserProfileTest() throws Exception {
+    public void wishlistFavouriteMoveViaUserProfile() throws Exception {
         this.mockMvc.perform(post("/films/{id}", 3)
                 .param("action", "wishlist"))
                 .andExpect(status().isOk());
