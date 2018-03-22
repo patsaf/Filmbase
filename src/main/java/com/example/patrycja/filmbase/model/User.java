@@ -57,11 +57,11 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(String username, String passoword, String email, LocalDate registerDate) {
-        this.username = username;
-        this.passoword = passoword;
-        this.email = email;
-        this.registerDate = registerDate;
+    public User(UserBuilder builder) {
+        this.username = builder.username;
+        this.passoword = builder.passoword;
+        this.email = builder.email;
+        this.registerDate = builder.registerDate;
         isAdmin = false;
         initCollections();
     }
@@ -175,6 +175,36 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public static class UserBuilder {
+        private String username;
+        private String passoword;
+        private String email;
+        private LocalDate registerDate;
+
+        public UserBuilder(String username) {
+            this.username = username;
+        }
+
+        public UserBuilder password(String passoword) {
+            this.passoword = passoword;
+            return this;
+        }
+
+        public UserBuilder email(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public UserBuilder registerDate(LocalDate registerDate) {
+            this.registerDate = registerDate;
+            return this;
+        }
+
+        public User build() {
+            return new User(this);
+        }
     }
 
 }

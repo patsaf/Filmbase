@@ -28,10 +28,11 @@ public class UserController {
 
     @PostConstruct
     public void introduceAdmin() {
-        User admin = new User("admin",
-                "hardpass",
-                "admin@gmail.com",
-                LocalDate.now());
+        User admin = new User.UserBuilder("admin")
+                .password("hardpass")
+                .email("admin@gmail.com")
+                .registerDate(LocalDate.now())
+                .build();
         admin.makeAdmin();
         userRepository.save(admin);
     }

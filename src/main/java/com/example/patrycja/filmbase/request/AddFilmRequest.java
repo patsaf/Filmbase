@@ -28,6 +28,18 @@ public class AddFilmRequest {
     @NotNull
     private String directorLastName;
 
+    public AddFilmRequest() {
+    }
+
+    public AddFilmRequest(AddFilmRequestBuilder builder) {
+        this.title = builder.title;
+        this.types = builder.types;
+        this.productionYear = builder.productionYear;
+        this.directorFirstName = builder.directorFirstName;
+        this.directorLastName = builder.directorLastName;
+        this.actorRequests = builder.actorRequests;
+    }
+
     private List<AddActorRequest> actorRequests;
 
     public List<AddActorRequest> getActorRequests() {
@@ -58,20 +70,6 @@ public class AddFilmRequest {
         this.directorLastName = directorLastName;
     }
 
-    public AddFilmRequest() {
-    }
-
-    public AddFilmRequest(String title, List<String> types, int productionYear,
-                          String directorFirstName, String directorLastName,
-                          List<AddActorRequest> actorRequests) {
-        this.title = title;
-        this.types = types;
-        this.productionYear = productionYear;
-        this.directorFirstName = directorFirstName;
-        this.directorLastName = directorLastName;
-        this.actorRequests = actorRequests;
-    }
-
     public String getTitle() {
         return title;
     }
@@ -79,9 +77,16 @@ public class AddFilmRequest {
     public Film getFilm() {
         List<Actor> cast = new ArrayList<>();
         for (AddActorRequest actorRequest : actorRequests) {
-            cast.add(new Actor(actorRequest.getFirstName(), actorRequest.getLastName()));
+            cast.add(new Actor.ActorBuilder(actorRequest.getFirstName(), actorRequest.getLastName())
+                    .build());
         }
-        return new Film(title, new Director(directorFirstName, directorLastName), types, productionYear, cast);
+        return new Film.FilmBuilder(title)
+                .director(new Director.DirectorBuilder(directorFirstName, directorLastName)
+                        .build())
+                .types(types)
+                .productionYear(productionYear)
+                .cast(cast)
+                .build();
     }
 
     public FilmDTO getDTO() {
@@ -102,5 +107,43 @@ public class AddFilmRequest {
 
     public void setProductionYear(int productionYear) {
         this.productionYear = productionYear;
+    }
+
+    public static class AddFilmRequestBuilder {
+        private String title;
+        private List<String> types;
+        private int productionYear;
+        private String directorFirstName;
+        private String directorLastName;
+        private List<AddActorRequest> actorRequests;
+
+        public AddFilmRequestBuilder(String title) {
+            this.title = title;
+        }
+
+        public AddFilmRequestBuilder types(List<String> types) {
+            this.types = types;
+            return this;
+        }
+
+        public AddFilmRequestBuilder productionYear(int productionYear) {
+            this.productionYear = productionYear;
+            return this;
+        }
+
+        public AddFilmRequestBuilder director(String directorFirstName, String directorLastName) {
+            this.directorFirstName = directorFirstName;
+            this.directorLastName = directorLastName;
+            return this;
+        }
+
+        public AddFilmRequestBuilder actorRequests(List<AddActorRequest> actorRequests) {
+            this.actorRequests = actorRequests;
+            return this;
+        }
+
+        public AddFilmRequest build() {
+            return new AddFilmRequest(this);
+        }
     }
 }

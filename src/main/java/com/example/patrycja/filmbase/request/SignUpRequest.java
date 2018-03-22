@@ -12,18 +12,19 @@ import java.time.format.DateTimeFormatter;
 public class SignUpRequest {
 
     @NotNull
-    @Size(min=4, max=25)
+    @Size(min = 4, max = 25)
     private String username;
 
     @NotNull
-    @Size(min=6)
+    @Size(min = 6)
     private String password;
 
     @NotNull
     @Email
     private String email;
 
-    public SignUpRequest() {}
+    public SignUpRequest() {
+    }
 
     public SignUpRequest(String username, String password, String email) {
         this.username = username;
@@ -35,10 +36,16 @@ public class SignUpRequest {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         LocalDate localDate = LocalDate.now();
         String date = localDate.format(formatter);
-        return new User(username, password, email, LocalDate.parse(date, formatter));
+        return new User.UserBuilder(username)
+                .password(password)
+                .email(email)
+                .registerDate(LocalDate.parse(date, formatter))
+                .build();
     }
 
-    public UserDTO getDTO() { return new UserDTO(getUser()); }
+    public UserDTO getDTO() {
+        return new UserDTO(getUser());
+    }
 
     public String getUsername() {
         return username;

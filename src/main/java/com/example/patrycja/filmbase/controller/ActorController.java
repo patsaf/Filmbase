@@ -54,6 +54,9 @@ public class ActorController {
             throw new DuplicateException("Actor already exists!");
         }
         List<Film> films = new ArrayList<>();
+        if(actorRequest.getFilms()==null) {
+            throw new FilmDoesntExistException("What kind of actor has no filmography?");
+        }
         for (FilmBriefDTO filmBrief : actorRequest.getFilms()) {
             Film film = filmRepository.findByTitleAndProductionYear(
                     filmBrief.getTitle(),
@@ -63,10 +66,12 @@ public class ActorController {
             }
             films.add(film);
         }
-        Actor actor = new Actor(actorRequest.getFirstName(),
-                actorRequest.getLastName(),
-                actorRequest.getDateOfBirth(),
-                films);
+        Actor actor = new Actor.ActorBuilder(
+                actorRequest.getFirstName(),
+                actorRequest.getLastName())
+                .dateOfBirth(actorRequest.getDateOfBirth())
+                .films(films)
+                .build();
         actorRepository.save(actor);
         for (Film film : films) {
             List<Actor> cast = film.getCast();
@@ -94,7 +99,7 @@ public class ActorController {
 
         Actor actor = actorRepository.findById(id);
 
-        if(actor==null) {
+        if (actor == null) {
             throw new InvalidIdException();
         }
 
@@ -138,11 +143,12 @@ public class ActorController {
             }
             try {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-                Actor updatedActor = new Actor(
+                Actor updatedActor = new Actor.ActorBuilder(
                         actor.getFirstName(),
-                        actor.getLastName(),
-                        LocalDate.parse(birthday, formatter),
-                        actor.getFilms());
+                        actor.getLastName())
+                        .dateOfBirth(LocalDate.parse(birthday, formatter))
+                        .films(actor.getFilms())
+                        .build();
                 actorRepository.setDateOfBirthById(LocalDate.parse(birthday, formatter), id);
                 ActorDTO actorDTO = new ActorDTO(updatedActor);
                 actorDTO.setId(id);
@@ -170,7 +176,7 @@ public class ActorController {
                 .isAdmin()) {
             Actor actor = actorRepository.findById(id);
 
-            if(actor==null) {
+            if (actor == null) {
                 throw new InvalidIdException();
             }
 

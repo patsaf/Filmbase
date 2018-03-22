@@ -52,17 +52,18 @@ public class DuplicateRequestTest {
                 .build();
 
         List<AddActorRequest> actorRequests = new ArrayList<>();
-        actorRequests.add(new AddActorRequest("Colin", "Firth"));
+        actorRequests.add(new AddActorRequest
+                .AddActorRequestBuilder("Colin", "Firth")
+                .build());
 
         String[] types = {"Crime", "Drama", "Thriller"};
-        duplicateRequest = new AddFilmRequest(
-                "Leon",
-                Arrays.asList(types),
-                1994,
-                "Luc",
-                "Besson",
-                actorRequests
-        );
+        duplicateRequest = new AddFilmRequest
+                .AddFilmRequestBuilder("Leon")
+                .types(Arrays.asList(types))
+                .productionYear(1994)
+                .director("Luc", "Besson")
+                .actorRequests(actorRequests)
+                .build();
 
         List<FilmBriefDTO> validList = new ArrayList<>();
         FilmBriefDTO film = new FilmBriefDTO();
@@ -70,9 +71,14 @@ public class DuplicateRequestTest {
         film.setProductionYear(1994);
         validList.add(film);
 
-        actorRequest = new AddActorRequest("Laurie", "Metcalf",
-                validList, LocalDate.of(1955, Month.MAY, 26));
-        existingRequest = new AddActorRequest("Colin", "Firth");
+        actorRequest = new AddActorRequest
+                .AddActorRequestBuilder("Laurie", "Metcalf")
+                .films(validList)
+                .dateOfBirth(LocalDate.of(1955, Month.MAY, 26))
+                .build();
+        existingRequest = new AddActorRequest
+                .AddActorRequestBuilder("Colin", "Firth")
+                .build();
         userRequest = new SignUpRequest("user", "password", "user@test.mail");
     }
 

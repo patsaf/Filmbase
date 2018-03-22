@@ -33,16 +33,19 @@ public class FilmGenerator {
             List<Actor> cast = new ArrayList<>();
             for (String name : fullNames) {
                 String[] separatedNames = name.split("_");
-                cast.add(new Actor(separatedNames[0], separatedNames[1]));
+                cast.add(new Actor.ActorBuilder(separatedNames[0], separatedNames[1])
+                        .build());
             }
 
-            filmList.add(new Film(
-                    content[0],
-                    new Director(content[1], content[2]),
-                    typeList,
-                    Integer.parseInt(content[4]),
-                    cast
-            ));
+            filmList.add(new Film.FilmBuilder(content[0])
+                    .director(new Director.DirectorBuilder(
+                            content[1], content[2])
+                            .build())
+                    .types(typeList)
+                    .productionYear(Integer.parseInt(content[4]))
+                    .cast(cast)
+                    .build()
+            );
         }
 
         count = filmList.size();

@@ -1,5 +1,6 @@
 package com.example.patrycja.filmbase.film_test;
 
+import com.example.patrycja.filmbase.DTO.FilmBriefDTO;
 import com.example.patrycja.filmbase.request.AddActorRequest;
 import com.example.patrycja.filmbase.template.FillBaseTemplate;
 import org.junit.Before;
@@ -38,7 +39,13 @@ public class AddActorToCastTest extends FillBaseTemplate {
                 .apply(springSecurity())
                 .build();
         setupParser();
-        actorRequest = new AddActorRequest("Laurie", "Metcalf");
+        List<FilmBriefDTO> validList = new ArrayList<>();
+        FilmBriefDTO film = new FilmBriefDTO();
+        film.setTitle("Leon");
+        film.setProductionYear(1994);
+        validList.add(film);
+        actorRequest = new AddActorRequest.AddActorRequestBuilder("Laurie", "Metcalf")
+                .build();
     }
 
     @Test

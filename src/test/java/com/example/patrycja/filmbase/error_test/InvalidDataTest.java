@@ -44,16 +44,19 @@ public class InvalidDataTest {
                 .apply(springSecurity())
                 .build();
         List<AddActorRequest> actorRequests = new ArrayList<>();
-        actorRequests.add(new AddActorRequest("Colin", "Firth"));
-        invalidFilmRequest = new AddFilmRequest(
-                "Kingsman: The Golden Circle",
-                null,
-                17,
-                "Matthew",
-                "Vaughn",
-                actorRequests
-        );
-        invalidActorRequest = new AddActorRequest(null, "Bohnam-Carter");
+        actorRequests.add(new AddActorRequest
+                .AddActorRequestBuilder("Colin", "Firth")
+                .build());
+        invalidFilmRequest = new AddFilmRequest
+                .AddFilmRequestBuilder("Kingsman: The Golden Circle")
+                .types(null)
+                .productionYear(17)
+                .director("Matthew", "Vaughn")
+                .actorRequests(actorRequests)
+                .build();
+        invalidActorRequest = new AddActorRequest
+                .AddActorRequestBuilder(null, "Bohnam-Carter")
+                .build();
         invalidUserRequest = new SignUpRequest("user", "user", "user");
     }
 

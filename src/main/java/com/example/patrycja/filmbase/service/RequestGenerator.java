@@ -34,19 +34,25 @@ public class RequestGenerator {
             List<AddActorRequest> cast = new ArrayList<>();
             for (String name : fullNames) {
                 String[] separatedNames = name.split("_");
-                cast.add(new AddActorRequest(separatedNames[0], separatedNames[1]));
-                actorList.add(new AddActorRequest(separatedNames[0], separatedNames[1]));
+                cast.add(new AddActorRequest
+                        .AddActorRequestBuilder(separatedNames[0],
+                        separatedNames[1])
+                        .build());
+                actorList.add(new AddActorRequest
+                        .AddActorRequestBuilder(separatedNames[0],
+                        separatedNames[1])
+                        .build());
             }
 
-            requestList.add(new AddFilmRequest(
-                    content[0],
-                    typeList,
-                    Integer.parseInt(content[4]),
-                    content[1],
-                    content[2],
-                    cast
-            ));
+            requestList.add(new AddFilmRequest
+                    .AddFilmRequestBuilder(content[0])
+                    .types(typeList)
+                    .productionYear(Integer.parseInt(content[4]))
+                    .director(content[1], content[2])
+                    .actorRequests(cast)
+                    .build());
         }
+        ;
 
         count = requestList.size();
     }

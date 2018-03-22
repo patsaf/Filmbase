@@ -106,12 +106,12 @@ public class DirectorController {
             }
             try {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-                Director updatedDirector = new Director(
+                Director updatedDirector = new Director.DirectorBuilder(
                         director.getFirstName(),
-                        director.getLastName(),
-                        LocalDate.parse(dateOfBirth, formatter),
-                        director.getFilms()
-                );
+                        director.getLastName())
+                        .dateOfBirth(LocalDate.parse(dateOfBirth, formatter))
+                        .films(director.getFilms())
+                        .build();
                 directorRepository.setDateOfBirthById(LocalDate.parse(dateOfBirth, formatter), id);
                 DirectorDTO directorDTO = new DirectorDTO(updatedDirector);
                 directorDTO.setId(id);

@@ -85,33 +85,44 @@ public class FilmController {
                 addFilmRequest.getDirectorLastName());
 
         if (director == null) {
-            director = new Director(
+            director = new Director.DirectorBuilder(
                     addFilmRequest.getDirectorFirstName(),
-                    addFilmRequest.getDirectorLastName());
+                    addFilmRequest.getDirectorLastName())
+                    .build();
             directorRepository.save(director);
         }
 
         List<Actor> cast = new ArrayList<>();
-        for (AddActorRequest actorRequest : addFilmRequest.getActorRequests()) {
-            Actor actor = actorRepository.findByFirstNameAndLastName(
-                    actorRequest.getFirstName(),
-                    actorRequest.getLastName());
-
-            if (actor == null) {
-                actor = new Actor(
+        if (addFilmRequest.getActorRequests() != null) {
+            for (AddActorRequest actorRequest : addFilmRequest.getActorRequests()) {
+                Actor actor = actorRepository.findByFirstNameAndLastName(
                         actorRequest.getFirstName(),
                         actorRequest.getLastName());
-                actorRepository.save(actor);
+
+                if (actor == null) {
+                    actor = new Actor.ActorBuilder(
+                            actorRequest.getFirstName(),
+                            actorRequest.getLastName())
+                            .build();
+                    actorRepository.save(actor);
+                }
+                cast.add(actor);
             }
-            cast.add(actor);
         }
 
-        Film newFilm = new Film(
+        /*Film newFilm = new Film(
                 addFilmRequest.getTitle(),
                 director,
                 addFilmRequest.getTypes(),
                 addFilmRequest.getProductionYear(),
-                cast);
+                cast);*/
+
+        Film newFilm = new Film.FilmBuilder(addFilmRequest.getTitle())
+                .director(director)
+                .types(addFilmRequest.getTypes())
+                .productionYear(addFilmRequest.getProductionYear())
+                .cast(cast)
+                .build();
 
         for (Film film : filmRepository.findAll()) {
             if (newFilm.checkIfContentEquals(film)) {
@@ -144,7 +155,7 @@ public class FilmController {
         User user = userRepository.findByUsername(username);
         Film film = filmRepository.findById(id);
 
-        if(film==null) {
+        if (film == null) {
             throw new InvalidIdException();
         }
 
@@ -152,7 +163,7 @@ public class FilmController {
 
             if (user.getFavFilms().contains(film)) {
                 throw new DuplicateException("This film is already on your list!");
-            } else if(user.getFilmWishlist().contains(film)) {
+            } else if (user.getFilmWishlist().contains(film)) {
                 user.getFilmWishlist().remove(film);
             }
             user.getFavFilms().add(film);
@@ -202,7 +213,7 @@ public class FilmController {
                 .isAdmin()) {
             Film film = filmRepository.findById(id);
 
-            if(film==null) {
+            if (film == null) {
                 throw new InvalidIdException();
             }
 

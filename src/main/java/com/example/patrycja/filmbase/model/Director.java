@@ -29,19 +29,11 @@ public class Director {
     public Director() {
     }
 
-    public Director(String firstName, String lastName) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        films = new ArrayList<>();
-        rate = 0;
-        sum = count = 0;
-    }
-
-    public Director(String firstName, String lastName, LocalDate dateOfBirth, List<Film> films) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.dateOfBirth = dateOfBirth;
-        this.films = films;
+    public Director(DirectorBuilder builder) {
+        this.firstName = builder.firstName;
+        this.lastName = builder.lastName;
+        this.dateOfBirth = builder.dateOfBirth;
+        this.films = builder.films;
         rate = 0;
         sum = count = 0;
     }
@@ -99,5 +91,31 @@ public class Director {
                 lastName.equals(director.getLastName()) &&
                 dateOfBirth == director.getDateOfBirth() &&
                 rate == director.getRate();
+    }
+
+    public static class DirectorBuilder {
+        private String firstName;
+        private String lastName;
+        private LocalDate dateOfBirth;
+        private List<Film> films;
+
+        public DirectorBuilder(String firstName, String lastName) {
+            this.firstName = firstName;
+            this.lastName = lastName;
+        }
+
+        public DirectorBuilder dateOfBirth(LocalDate dateOfBirth) {
+            this.dateOfBirth = dateOfBirth;
+            return this;
+        }
+
+        public DirectorBuilder films(List<Film> films) {
+            this.films = films;
+            return this;
+        }
+
+        public Director build() {
+            return new Director(this);
+        }
     }
 }

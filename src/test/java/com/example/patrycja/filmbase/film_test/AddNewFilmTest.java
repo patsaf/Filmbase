@@ -41,10 +41,17 @@ public class AddNewFilmTest {
                 .build();
 
         List<AddActorRequest> actorRequests = new ArrayList<>();
-        actorRequests.add(new AddActorRequest("Jean", "Reno"));
+        actorRequests.add(new AddActorRequest
+                .AddActorRequestBuilder("Jean", "Reno")
+                .build());
         String[] types = {"Crime", "Drama", "Thriller"};
-        filmRequest = new AddFilmRequest("Leon", Arrays.asList(types), 1994,
-                "Luc", "Besson", actorRequests);
+        filmRequest = new AddFilmRequest
+                .AddFilmRequestBuilder("Leon")
+                .types(Arrays.asList(types))
+                .productionYear(1994)
+                .director("Luc", "Besson")
+                .actorRequests(actorRequests)
+                .build();
     }
 
     @Test

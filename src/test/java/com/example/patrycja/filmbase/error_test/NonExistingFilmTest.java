@@ -54,8 +54,10 @@ public class NonExistingFilmTest {
         invalidList.add(film1);
         invalidList.add(film2);
 
-        nonExistingFilmRequest = new AddActorRequest("Helena", "Bohnam-Carter",
-                invalidList, LocalDate.of(1965, Month.MAY, 26));
+        nonExistingFilmRequest = new AddActorRequest.AddActorRequestBuilder("Helena", "Bohnam-Carter")
+                .films(invalidList)
+                .dateOfBirth(LocalDate.of(1965, Month.MAY, 26))
+                .build();
     }
 
     @Test

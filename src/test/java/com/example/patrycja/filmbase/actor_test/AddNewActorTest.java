@@ -47,8 +47,11 @@ public class AddNewActorTest extends FillBaseTemplate {
         film1.setTitle("Lady Bird");
         film1.setProductionYear(2017);
         filmBriefDTOList.add(film1);
-        actorRequest = new AddActorRequest("Laurie", "Metcalf",
-                filmBriefDTOList, LocalDate.of(1955, Month.MAY, 26));
+        actorRequest = new AddActorRequest
+                .AddActorRequestBuilder("Laurie", "Metcalf")
+                .films(filmBriefDTOList)
+                .dateOfBirth(LocalDate.of(1955, Month.MAY, 26))
+                .build();
     }
 
     @Test

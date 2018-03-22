@@ -49,10 +49,12 @@ public class FilmCastController {
         if (actor == null) {
             List<Film> films = new ArrayList<>();
             films.add(film);
-            actor = new Actor(actorRequest.getFirstName(),
-                    actorRequest.getLastName(),
-                    actorRequest.getDateOfBirth(),
-                    films);
+            actor = new Actor.ActorBuilder(
+                    actorRequest.getFirstName(),
+                    actorRequest.getLastName())
+                    .dateOfBirth(actorRequest.getDateOfBirth())
+                    .films(films)
+                    .build();
         } else if (film.getCast()
                 .stream()
                 .anyMatch(oldActor -> oldActor.getFirstName().equals(finalActor.getFirstName()) &&

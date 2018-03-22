@@ -29,16 +29,11 @@ public class AddActorRequest {
     public AddActorRequest() {
     }
 
-    public AddActorRequest(String firstName, String lastName) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-    }
-
-    public AddActorRequest(String firstName, String lastName, List<FilmBriefDTO> films, LocalDate dateOfBirth) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.films = films;
-        this.dateOfBirth = dateOfBirth;
+    public AddActorRequest(AddActorRequestBuilder builder) {
+        this.firstName = builder.firstName;
+        this.lastName = builder.lastName;
+        this.films = builder.films;
+        this.dateOfBirth = builder.dateOfBirth;
     }
 
     public String getFirstName() {
@@ -71,5 +66,31 @@ public class AddActorRequest {
 
     public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
+    }
+
+    public static class AddActorRequestBuilder {
+        private String firstName;
+        private String lastName;
+        private List<FilmBriefDTO> films;
+        private LocalDate dateOfBirth;
+
+        public AddActorRequestBuilder(String firstName, String lastName) {
+            this.firstName = firstName;
+            this.lastName = lastName;
+        }
+
+        public AddActorRequestBuilder films(List<FilmBriefDTO> films) {
+            this.films = films;
+            return this;
+        }
+
+        public AddActorRequestBuilder dateOfBirth(LocalDate dateOfBirth) {
+            this.dateOfBirth = dateOfBirth;
+            return this;
+        }
+
+        public AddActorRequest build() {
+            return new AddActorRequest(this);
+        }
     }
 }

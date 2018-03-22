@@ -29,28 +29,11 @@ public class Actor {
     public Actor() {
     }
 
-    public Actor(String firstName, String lastName) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        films = new ArrayList<>();
-        rate = 0;
-        sum = count = 0;
-    }
-
-    public Actor(String firstName, String lastName, LocalDate dateOfBirth) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.dateOfBirth = dateOfBirth;
-        films = new ArrayList<>();
-        rate = 0;
-        sum = count = 0;
-    }
-
-    public Actor(String firstName, String lastName, LocalDate dateOfBirth, List<Film> films) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.dateOfBirth = dateOfBirth;
-        this.films = films;
+    public Actor(ActorBuilder builder) {
+        this.firstName = builder.firstName;
+        this.lastName = builder.lastName;
+        this.dateOfBirth = builder.dateOfBirth;
+        this.films = builder.films;
         rate = 0;
         sum = count = 0;
     }
@@ -108,5 +91,31 @@ public class Actor {
                 lastName.equals(actor.getLastName()) &&
                 dateOfBirth == actor.getDateOfBirth() &&
                 films.equals(actor.getFilms());
+    }
+
+    public static class ActorBuilder {
+        private String firstName;
+        private String lastName;
+        private LocalDate dateOfBirth;
+        private List<Film> films;
+
+        public ActorBuilder(String firstName, String lastName) {
+            this.firstName = firstName;
+            this.lastName = lastName;
+        }
+
+        public ActorBuilder dateOfBirth(LocalDate dateOfBirth) {
+            this.dateOfBirth = dateOfBirth;
+            return this;
+        }
+
+        public ActorBuilder films(List<Film> films) {
+            this.films = films;
+            return this;
+        }
+
+        public Actor build() {
+            return new Actor(this);
+        }
     }
 }
