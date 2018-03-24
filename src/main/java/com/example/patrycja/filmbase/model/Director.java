@@ -1,14 +1,17 @@
 package com.example.patrycja.filmbase.model;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
+@Getter
+@NoArgsConstructor
 public class Director {
 
     @Id
@@ -26,9 +29,6 @@ public class Director {
     private double sum;
     private long count;
 
-    public Director() {
-    }
-
     public Director(DirectorBuilder builder) {
         this.firstName = builder.firstName;
         this.lastName = builder.lastName;
@@ -36,38 +36,6 @@ public class Director {
         this.films = builder.films;
         rate = 0;
         sum = count = 0;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public LocalDate getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public List<Film> getFilms() {
-        return films;
-    }
-
-    public double getRate() {
-        return rate;
-    }
-
-    public double getSum() {
-        return sum;
-    }
-
-    public long getCount() {
-        return count;
     }
 
     public void rate(double i) {

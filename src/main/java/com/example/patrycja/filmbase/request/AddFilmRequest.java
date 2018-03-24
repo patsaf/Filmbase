@@ -4,12 +4,16 @@ import com.example.patrycja.filmbase.DTO.FilmDTO;
 import com.example.patrycja.filmbase.model.Actor;
 import com.example.patrycja.filmbase.model.Director;
 import com.example.patrycja.filmbase.model.Film;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
+@NoArgsConstructor
 public class AddFilmRequest {
 
     @NotNull
@@ -28,8 +32,7 @@ public class AddFilmRequest {
     @NotNull
     private String directorLastName;
 
-    public AddFilmRequest() {
-    }
+    private List<AddActorRequest> actorRequests;
 
     public AddFilmRequest(AddFilmRequestBuilder builder) {
         this.title = builder.title;
@@ -38,40 +41,6 @@ public class AddFilmRequest {
         this.directorFirstName = builder.directorFirstName;
         this.directorLastName = builder.directorLastName;
         this.actorRequests = builder.actorRequests;
-    }
-
-    private List<AddActorRequest> actorRequests;
-
-    public List<AddActorRequest> getActorRequests() {
-        return actorRequests;
-    }
-
-    public void setActorRequests(List<AddActorRequest> actorRequests) {
-        this.actorRequests = actorRequests;
-    }
-
-    public void setTypes(List<String> types) {
-        this.types = types;
-    }
-
-    public String getDirectorFirstName() {
-        return directorFirstName;
-    }
-
-    public void setDirectorFirstName(String directorFirstName) {
-        this.directorFirstName = directorFirstName;
-    }
-
-    public String getDirectorLastName() {
-        return directorLastName;
-    }
-
-    public void setDirectorLastName(String directorLastName) {
-        this.directorLastName = directorLastName;
-    }
-
-    public String getTitle() {
-        return title;
     }
 
     public Film getFilm() {
@@ -91,22 +60,6 @@ public class AddFilmRequest {
 
     public FilmDTO getDTO() {
         return new FilmDTO(getFilm());
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public List<String> getTypes() {
-        return types;
-    }
-
-    public int getProductionYear() {
-        return productionYear;
-    }
-
-    public void setProductionYear(int productionYear) {
-        this.productionYear = productionYear;
     }
 
     public static class AddFilmRequestBuilder {

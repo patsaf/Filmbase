@@ -1,12 +1,15 @@
 package com.example.patrycja.filmbase.DTO;
 
 import com.example.patrycja.filmbase.model.Director;
-import com.example.patrycja.filmbase.model.Film;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
+@NoArgsConstructor
 public class DirectorDTO {
 
     private long id;
@@ -16,9 +19,6 @@ public class DirectorDTO {
     private List<FilmBriefDTO> films;
     private double rate;
     private long count;
-
-    public DirectorDTO() {
-    }
 
     public DirectorDTO(Director director) {
         this.id = director.getId();
@@ -30,62 +30,6 @@ public class DirectorDTO {
                 .forEach(film -> films.add(new FilmBriefDTO(film)));
         this.rate = director.getRate();
         this.count = director.getCount();
-    }
-
-    public long getCount() {
-        return count;
-    }
-
-    public void setCount(long count) {
-        this.count = count;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public LocalDate getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public void setDateOfBirth(LocalDate dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }
-
-    public List<FilmBriefDTO> getFilms() {
-        return films;
-    }
-
-    public void setFilms(List<FilmBriefDTO> films) {
-        this.films = films;
-    }
-
-    public double getRate() {
-        return rate;
-    }
-
-    public void setRate(double rate) {
-        this.rate = rate;
     }
 
     public Boolean checkIfDataEquals(DirectorDTO directorDTO) {

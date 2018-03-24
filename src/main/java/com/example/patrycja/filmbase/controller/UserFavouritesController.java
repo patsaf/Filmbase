@@ -36,7 +36,7 @@ public class UserFavouritesController {
     public FavouritesDTO findFavourites(@PathVariable("id") long id) {
         User user = userRepository.findById(id);
 
-        if(user==null) {
+        if (user == null) {
             throw new InvalidIdException();
         }
 
@@ -54,38 +54,47 @@ public class UserFavouritesController {
         String username = ((UserDetails) principal).getUsername();
         User user = userRepository.findById(id);
 
-        if(user==null) {
+        if (user == null) {
             throw new InvalidIdException();
         }
 
         if ((userRepository
-                .findByUsername(username)).equals(user)) {
+                .findByUsername(username))
+                .equals(user)) {
             if (action.equalsIgnoreCase("film")) {
 
                 if (user.getFavFilms()
                         .stream()
                         .anyMatch(film -> film.getId() == itemid)) {
-                    user.getFavFilms().remove(filmRepository.findById(itemid));
+                    user
+                            .getFavFilms()
+                            .remove(filmRepository.findById(itemid));
                 } else {
                     throw new InvalidParamException("This film isn't even on your list!");
                 }
 
             } else if (action.equalsIgnoreCase("actor")) {
 
-                if (user.getFavActors()
+                if (user
+                        .getFavActors()
                         .stream()
                         .anyMatch(actor -> actor.getId() == itemid)) {
-                    user.getFavActors().remove(actorRepository.findById(itemid));
+                    user
+                            .getFavActors()
+                            .remove(actorRepository.findById(itemid));
                 } else {
                     throw new InvalidParamException("This actor isn't even on your list!");
                 }
 
             } else if (action.equalsIgnoreCase("director")) {
 
-                if (user.getFavDirectors()
+                if (user
+                        .getFavDirectors()
                         .stream()
                         .anyMatch(director -> director.getId() == itemid)) {
-                    user.getFavDirectors().remove(directorRepository.findById(itemid));
+                    user
+                            .getFavDirectors()
+                            .remove(directorRepository.findById(itemid));
                 } else {
                     throw new InvalidParamException("This director isn't even on your list!");
                 }

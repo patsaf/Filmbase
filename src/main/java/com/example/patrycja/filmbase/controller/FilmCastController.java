@@ -57,8 +57,12 @@ public class FilmCastController {
                     .build();
         } else if (film.getCast()
                 .stream()
-                .anyMatch(oldActor -> oldActor.getFirstName().equals(finalActor.getFirstName()) &&
-                        oldActor.getLastName().equals(finalActor.getLastName()))) {
+                .anyMatch(oldActor -> oldActor
+                        .getFirstName()
+                        .equals(finalActor.getFirstName()) &&
+                        oldActor
+                                .getLastName()
+                                .equals(finalActor.getLastName()))) {
             throw new DuplicateException("Actor already in cast!");
         }
         actorRepository.save(actor);

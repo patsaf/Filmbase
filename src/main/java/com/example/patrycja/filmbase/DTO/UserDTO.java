@@ -1,11 +1,15 @@
 package com.example.patrycja.filmbase.DTO;
 
 import com.example.patrycja.filmbase.model.User;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
+@NoArgsConstructor
 public class UserDTO {
 
     private long id;
@@ -19,17 +23,6 @@ public class UserDTO {
     List<DirectorDTO> favDirectors;
 
     List<FilmBriefDTO> filmWishlist;
-
-    public UserDTO() {
-    }
-
-    public UserDTO(long id, String username, LocalDate registerDate, boolean isAdmin) {
-        this.id = id;
-        this.username = username;
-        this.registerDate = registerDate;
-        this.isAdmin = isAdmin;
-        initCollections();
-    }
 
     public UserDTO(User user) {
         id = user.getId();
@@ -56,70 +49,6 @@ public class UserDTO {
         favActors = new ArrayList<>();
         favDirectors = new ArrayList<>();
         filmWishlist = new ArrayList<>();
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public LocalDate getRegisterDate() {
-        return registerDate;
-    }
-
-    public void setRegisterDate(LocalDate registerDate) {
-        this.registerDate = registerDate;
-    }
-
-    public List<FilmBriefDTO> getFavFilms() {
-        return favFilms;
-    }
-
-    public void setFavFilms(List<FilmBriefDTO> favFilms) {
-        this.favFilms = favFilms;
-    }
-
-    public List<ActorDTO> getFavActors() {
-        return favActors;
-    }
-
-    public void setFavActors(List<ActorDTO> favActors) {
-        this.favActors = favActors;
-    }
-
-    public List<DirectorDTO> getFavDirectors() {
-        return favDirectors;
-    }
-
-    public void setFavDirectors(List<DirectorDTO> favDirectors) {
-        this.favDirectors = favDirectors;
-    }
-
-    public List<FilmBriefDTO> getFilmWishlist() {
-        return filmWishlist;
-    }
-
-    public void setFilmWishlist(List<FilmBriefDTO> filmWishlist) {
-        this.filmWishlist = filmWishlist;
-    }
-
-    public boolean isAdmin() {
-        return isAdmin;
-    }
-
-    public void setAdmin(boolean admin) {
-        isAdmin = admin;
     }
 
     public boolean checkIfDataEquals(UserDTO userDTO) {

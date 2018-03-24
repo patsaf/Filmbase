@@ -1,5 +1,7 @@
 package com.example.patrycja.filmbase.model;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -7,6 +9,8 @@ import java.util.List;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
+@Getter
+@NoArgsConstructor
 public class Film {
 
     @Id
@@ -31,9 +35,6 @@ public class Film {
     private double sum;
     private long count;
 
-    public Film() {
-    }
-
     public Film(FilmBuilder builder) {
         this.title = builder.title;
         this.director = builder.director;
@@ -42,42 +43,6 @@ public class Film {
         this.cast = builder.cast;
         rate = 0;
         sum = count = 0;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public List<Actor> getCast() {
-        return cast;
-    }
-
-    public Director getDirector() {
-        return director;
-    }
-
-    public List<String> getTypes() {
-        return types;
-    }
-
-    public int getProductionYear() {
-        return productionYear;
-    }
-
-    public double getRate() {
-        return rate;
-    }
-
-    public double getSum() {
-        return sum;
-    }
-
-    public long getCount() {
-        return count;
     }
 
     public void rate(double i) {

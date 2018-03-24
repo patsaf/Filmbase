@@ -28,7 +28,7 @@ public class UserWishlistController {
     public WishlistDTO findWishlist(@PathVariable("id") long id) {
         User user = userRepository.findById(id);
 
-        if(user==null) {
+        if (user == null) {
             throw new InvalidIdException();
         }
 
@@ -45,17 +45,23 @@ public class UserWishlistController {
         String username = ((UserDetails) principal).getUsername();
         User user = userRepository.findById(id);
 
-        if(user==null) {
+        if (user == null) {
             throw new InvalidIdException();
         }
 
         if ((userRepository
-                .findByUsername(username)).equals(user)) {
-            if (user.getFilmWishlist()
+                .findByUsername(username))
+                .equals(user)) {
+            if (user
+                    .getFilmWishlist()
                     .stream()
                     .anyMatch(film -> film.getId() == itemid)) {
-                user.getFilmWishlist().remove(filmRepository.findById(itemid));
-                user.getFavFilms().add(filmRepository.findById(itemid));
+                user
+                        .getFilmWishlist()
+                        .remove(filmRepository.findById(itemid));
+                user
+                        .getFavFilms()
+                        .add(filmRepository.findById(itemid));
             } else {
                 throw new InvalidParamException("This film isn't even on your list!");
             }
@@ -75,16 +81,20 @@ public class UserWishlistController {
         String username = ((UserDetails) principal).getUsername();
         User user = userRepository.findById(id);
 
-        if(user==null) {
+        if (user == null) {
             throw new InvalidIdException();
         }
 
         if ((userRepository
-                .findByUsername(username)).equals(user)) {
-            if (user.getFilmWishlist()
+                .findByUsername(username))
+                .equals(user)) {
+            if (user
+                    .getFilmWishlist()
                     .stream()
                     .anyMatch(film -> film.getId() == itemid)) {
-                user.getFilmWishlist().remove(filmRepository.findById(itemid));
+                user
+                        .getFilmWishlist()
+                        .remove(filmRepository.findById(itemid));
             } else {
                 throw new InvalidParamException("This film isn't even on your list!");
             }

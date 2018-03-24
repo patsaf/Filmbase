@@ -48,18 +48,29 @@ public class FilmController {
         FilmGenerator filmGenerator = new FilmGenerator();
         for (int i = 0; i < filmGenerator.getCount(); i++) {
             Director director = directorRepository.findByFirstNameAndLastName(
-                    filmGenerator.getFilm(i).getDirector().getFirstName(),
-                    filmGenerator.getFilm(i).getDirector().getLastName());
+                    filmGenerator
+                            .getFilm(i)
+                            .getDirector()
+                            .getFirstName(),
+                    filmGenerator
+                            .getFilm(i)
+                            .getDirector()
+                            .getLastName());
 
             if (director == null) {
-                directorRepository.save(filmGenerator.getFilm(i).getDirector());
+                directorRepository.save(filmGenerator.getFilm(i)
+                        .getDirector());
             }
 
             List<Actor> cast = filmGenerator.getFilm(i).getCast();
             for (int j = 0; j < cast.size(); j++) {
                 Actor actor = actorRepository.findByFirstNameAndLastName(
-                        cast.get(j).getFirstName(),
-                        cast.get(j).getLastName());
+                        cast
+                                .get(j)
+                                .getFirstName(),
+                        cast
+                                .get(j)
+                                .getLastName());
                 if (actor == null) {
                     actorRepository.save(cast.get(j));
                 }
@@ -110,13 +121,6 @@ public class FilmController {
             }
         }
 
-        /*Film newFilm = new Film(
-                addFilmRequest.getTitle(),
-                director,
-                addFilmRequest.getTypes(),
-                addFilmRequest.getProductionYear(),
-                cast);*/
-
         Film newFilm = new Film.FilmBuilder(addFilmRequest.getTitle())
                 .director(director)
                 .types(addFilmRequest.getTypes())
@@ -161,22 +165,36 @@ public class FilmController {
 
         if (action.equalsIgnoreCase("favourite")) {
 
-            if (user.getFavFilms().contains(film)) {
+            if (user
+                    .getFavFilms()
+                    .contains(film)) {
                 throw new DuplicateException("This film is already on your list!");
-            } else if (user.getFilmWishlist().contains(film)) {
-                user.getFilmWishlist().remove(film);
+            } else if (user
+                    .getFilmWishlist()
+                    .contains(film)) {
+                user
+                        .getFilmWishlist()
+                        .remove(film);
             }
-            user.getFavFilms().add(film);
+            user
+                    .getFavFilms()
+                    .add(film);
             userRepository.save(user);
 
         } else if (action.equalsIgnoreCase("wishlist")) {
 
-            if (user.getFilmWishlist().contains(film)) {
+            if (user
+                    .getFilmWishlist()
+                    .contains(film)) {
                 throw new DuplicateException("This film is already on your list!");
-            } else if (user.getFavFilms().contains(film)) {
+            } else if (user
+                    .getFavFilms()
+                    .contains(film)) {
                 throw new DuplicateException("Seems like you've already seen this film!");
             }
-            user.getFilmWishlist().add(film);
+            user
+                    .getFilmWishlist()
+                    .add(film);
             userRepository.save(user);
 
         } else if (action.equalsIgnoreCase("rate")) {
@@ -184,12 +202,16 @@ public class FilmController {
             try {
                 if ((rating < 0) || (rating > 10)) {
                     throw new InvalidParamException("Your rating must fall between 0 and 10!");
-                } else if (user.getRatedFilms().containsKey(film.getId())) {
+                } else if (user
+                        .getRatedFilms()
+                        .containsKey(film.getId())) {
                     throw new DuplicateException("You've already rated this film!");
                 }
                 film.rate(rating);
                 filmRepository.save(film);
-                user.getRatedFilms().put(film.getId(), rating);
+                user
+                        .getRatedFilms()
+                        .put(film.getId(), rating);
                 userRepository.save(user);
             } catch (NullPointerException ex) {
                 throw new InvalidParamException("You need to insert your rating!");
@@ -226,7 +248,9 @@ public class FilmController {
                 directorRepository.delete(film.getDirector());
             }
             for (Actor actor : castById) {
-                if (actor.getFilms().isEmpty()) {
+                if (actor
+                        .getFilms()
+                        .isEmpty()) {
                     actorRepository.delete(actor);
                 }
             }

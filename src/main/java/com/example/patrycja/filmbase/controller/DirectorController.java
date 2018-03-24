@@ -62,7 +62,7 @@ public class DirectorController {
 
         Director director = directorRepository.findById(id);
 
-        if(director==null) {
+        if (director == null) {
             throw new InvalidIdException();
         }
 
@@ -78,7 +78,9 @@ public class DirectorController {
             if (user.getFavDirectors().contains(director)) {
                 throw new DuplicateException("This director is already on your list!");
             }
-            user.getFavDirectors().add(director);
+            user
+                    .getFavDirectors()
+                    .add(director);
             userRepository.save(user);
             return new DirectorDTO(director);
 
@@ -87,12 +89,16 @@ public class DirectorController {
             try {
                 if ((rating < 0) || (rating > 10)) {
                     throw new InvalidParamException("Your rating must fall between 0 and 10!");
-                } else if (user.getRatedDirectors().containsKey(director.getId())) {
+                } else if (user
+                        .getRatedDirectors()
+                        .containsKey(director.getId())) {
                     throw new DuplicateException("You've already rated this director!");
                 }
                 director.rate(rating);
                 directorRepository.save(director);
-                user.getRatedDirectors().put(director.getId(), rating);
+                user
+                        .getRatedDirectors()
+                        .put(director.getId(), rating);
                 userRepository.save(user);
                 return new DirectorDTO(director);
             } catch (NullPointerException ex) {
@@ -119,7 +125,8 @@ public class DirectorController {
             } catch (NullPointerException ex) {
                 throw new InvalidParamException("You need to insert date!");
             } catch (DateTimeParseException dex) {
-                throw new InvalidParamException("Invalid date format! The pattern should be: \"dd-MM-yyyy\"");            }
+                throw new InvalidParamException("Invalid date format! The pattern should be: \"dd-MM-yyyy\"");
+            }
 
         } else {
             throw new InvalidParamException("Invalid action request!");

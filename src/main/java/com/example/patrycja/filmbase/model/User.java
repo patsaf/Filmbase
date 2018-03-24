@@ -1,6 +1,8 @@
 package com.example.patrycja.filmbase.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Email;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,6 +16,8 @@ import java.util.*;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
+@Getter
+@NoArgsConstructor
 public class User implements UserDetails {
 
     @Id
@@ -34,28 +38,25 @@ public class User implements UserDetails {
     private LocalDate registerDate;
 
     @OneToMany
-    List<Film> favFilms;
+    private List<Film> favFilms;
 
     @OneToMany
-    List<Actor> favActors;
+    private List<Actor> favActors;
 
     @OneToMany
-    List<Director> favDirectors;
+    private List<Director> favDirectors;
 
     @OneToMany
-    List<Film> filmWishlist;
+    private List<Film> filmWishlist;
 
     @ElementCollection
-    Map<Long, Double> ratedFilms;
+    private Map<Long, Double> ratedFilms;
 
     @ElementCollection
-    Map<Long, Double> ratedActors;
+    private Map<Long, Double> ratedActors;
 
     @ElementCollection
-    Map<Long, Double> ratedDirectors;
-
-    public User() {
-    }
+    private Map<Long, Double> ratedDirectors;
 
     public User(UserBuilder builder) {
         this.username = builder.username;
@@ -80,73 +81,8 @@ public class User implements UserDetails {
         isAdmin = true;
     }
 
-    public void addFilm(Film film) {
-        favFilms.add(film);
-    }
-
-    public void addActor(Actor actor) {
-        favActors.add(actor);
-    }
-
-    public void addDirector(Director director) {
-        favDirectors.add(director);
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public String getPassoword() {
-        return passoword;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public LocalDate getRegisterDate() {
-        return registerDate;
-    }
-
-    public List<Film> getFilmWishlist() {
-        return filmWishlist;
-    }
-
-    public Map<Long, Double> getRatedFilms() {
-        return ratedFilms;
-    }
-
-    public Map<Long, Double> getRatedActors() {
-        return ratedActors;
-    }
-
-    public Map<Long, Double> getRatedDirectors() {
-        return ratedDirectors;
-    }
-
-    @Override
-    public String getPassword() {
-        return passoword;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
     public boolean isAdmin() {
         return isAdmin;
-    }
-
-    public List<Film> getFavFilms() {
-        return favFilms;
-    }
-
-    public List<Actor> getFavActors() {
-        return favActors;
-    }
-
-    public List<Director> getFavDirectors() {
-        return favDirectors;
     }
 
     @Override
@@ -155,6 +91,16 @@ public class User implements UserDetails {
             return Collections.singletonList(new SimpleGrantedAuthority("ADMIN"));
         }
         return Collections.singletonList(new SimpleGrantedAuthority("USER"));
+    }
+
+    @Override
+    public String getPassword() {
+        return passoword;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
     }
 
     @Override

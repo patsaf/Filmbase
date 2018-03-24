@@ -5,10 +5,16 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UpdateDateOfBirthRequest {
 
     @NotNull
@@ -16,12 +22,4 @@ public class UpdateDateOfBirthRequest {
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate dateOfBirth;
-
-    public UpdateDateOfBirthRequest() {}
-
-    public UpdateDateOfBirthRequest(LocalDate dateOfBirth) { this.dateOfBirth = dateOfBirth; }
-
-    public LocalDate getDateOfBirth() { return dateOfBirth; }
-
-    public void setDateOfBirth(LocalDate dateOfBirth) { this.dateOfBirth = dateOfBirth; }
 }

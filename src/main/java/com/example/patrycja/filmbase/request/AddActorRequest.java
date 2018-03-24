@@ -6,11 +6,15 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 
+@Data
+@NoArgsConstructor
 public class AddActorRequest {
 
     @NotNull
@@ -26,46 +30,11 @@ public class AddActorRequest {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate dateOfBirth;
 
-    public AddActorRequest() {
-    }
-
     public AddActorRequest(AddActorRequestBuilder builder) {
         this.firstName = builder.firstName;
         this.lastName = builder.lastName;
         this.films = builder.films;
         this.dateOfBirth = builder.dateOfBirth;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public List<FilmBriefDTO> getFilms() {
-        return films;
-    }
-
-    public void setFilms(List<FilmBriefDTO> films) {
-        this.films = films;
-    }
-
-    public LocalDate getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public void setDateOfBirth(LocalDate dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
     }
 
     public static class AddActorRequestBuilder {

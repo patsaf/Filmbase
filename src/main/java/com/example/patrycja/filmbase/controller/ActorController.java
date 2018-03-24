@@ -54,7 +54,7 @@ public class ActorController {
             throw new DuplicateException("Actor already exists!");
         }
         List<Film> films = new ArrayList<>();
-        if(actorRequest.getFilms()==null) {
+        if (actorRequest.getFilms() == null) {
             throw new FilmDoesntExistException("What kind of actor has no filmography?");
         }
         for (FilmBriefDTO filmBrief : actorRequest.getFilms()) {
@@ -115,7 +115,9 @@ public class ActorController {
             if (user.getFavActors().contains(actor)) {
                 throw new DuplicateException("This actor is already on your list!");
             }
-            user.getFavActors().add(actor);
+            user
+                    .getFavActors()
+                    .add(actor);
             userRepository.save(user);
             return new ActorDTO(actor);
 
@@ -129,7 +131,9 @@ public class ActorController {
                 }
                 actor.rate(rating);
                 actorRepository.save(actor);
-                user.getRatedActors().put(actor.getId(), rating);
+                user
+                        .getRatedActors()
+                        .put(actor.getId(), rating);
                 userRepository.save(user);
                 return new ActorDTO(actor);
             } catch (NullPointerException ex) {
@@ -180,7 +184,8 @@ public class ActorController {
                 throw new InvalidIdException();
             }
 
-            actorRepository.getFilmsById(id)
+            actorRepository
+                    .getFilmsById(id)
                     .stream()
                     .forEach(film -> film.getCast().remove(actor));
             actorRepository.delete(actor);
