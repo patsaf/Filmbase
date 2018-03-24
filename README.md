@@ -8,8 +8,8 @@ Within the app, anyone can find essential information about any film, actor or d
 
 The objects processed inside the app were divided into 3 categories:
 - models - entities stored in the database, managed by JPA repositories
-- DTOs - Data Transfer Objects - objects accessed and view by the actual user, passed as a JSON string
-- requests - made to create/update objects in the database, would be handled by front-end forms
+- DTOs - Data Transfer Objects - objects accessed and viewed by the actual user, passed as a JSON string
+- requests - made to create/update objects in the database, to be handled by front-end forms
 
 ### Technologies used
 - **Java SE 8** - lambda expressions, streams, LocalDate, etc.
