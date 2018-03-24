@@ -23,7 +23,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth
+        auth //TODO: passwords hashing!
                 .inMemoryAuthentication()
                 .withUser("user")
                 .password("password")

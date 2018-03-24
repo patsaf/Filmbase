@@ -10,9 +10,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-
 public class FillBaseTemplate {
 
     private final String[] USERNAMES = {"alicja", "login_idea", "UpperAndLower", "user1234", "0xd0"};
