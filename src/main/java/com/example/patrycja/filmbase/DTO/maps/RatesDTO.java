@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 public class RatesDTO {
 
-    List<MapActorItemDTO> actorList;
-    List<MapDirectorItemDTO> directorList;
-    List<MapFilmItemDTO> filmList;
+    List<MapActorItemDTO> ratedActors;
+    List<MapDirectorItemDTO> ratedDirectors;
+    List<MapFilmItemDTO> ratedFilms;
 }

@@ -68,6 +68,10 @@ public class Film {
                 productionYear == film.getProductionYear();
     }
 
+    public void addActorToCast(Actor actor) {
+        cast.add(actor);
+    }
+
     public static class FilmBuilder {
         private String title;
         private Director director;

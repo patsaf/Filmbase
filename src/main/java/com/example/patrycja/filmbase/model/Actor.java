@@ -54,6 +54,14 @@ public class Actor {
         }
     }
 
+    public boolean hasDateOfBirth() {
+        return !(dateOfBirth==null);
+    }
+
+    public boolean hasAnyFilms() {
+        return !(films==null);
+    }
+
     public static class ActorBuilder {
         private String firstName;
         private String lastName;

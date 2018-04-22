@@ -56,12 +56,8 @@ public class UserWishlistController {
                     .getFilmWishlist()
                     .stream()
                     .anyMatch(film -> film.getId() == itemid)) {
-                user
-                        .getFilmWishlist()
-                        .remove(filmRepository.findById(itemid));
-                user
-                        .getFavFilms()
-                        .add(filmRepository.findById(itemid));
+                user.removeFilmFromWishlist(filmRepository.findById(itemid));
+                user.addFavFilm(filmRepository.findById(itemid));
             } else {
                 throw new InvalidParamException("This film isn't even on your list!");
             }
@@ -92,9 +88,7 @@ public class UserWishlistController {
                     .getFilmWishlist()
                     .stream()
                     .anyMatch(film -> film.getId() == itemid)) {
-                user
-                        .getFilmWishlist()
-                        .remove(filmRepository.findById(itemid));
+                user.removeFilmFromWishlist(filmRepository.findById(itemid));
             } else {
                 throw new InvalidParamException("This film isn't even on your list!");
             }

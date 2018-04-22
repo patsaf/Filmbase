@@ -50,10 +50,10 @@ public class UserController {
 
     @GetMapping("/users")
     public List<UserDTO> findAllUsers() {
-        List<UserDTO> allDTOs = new ArrayList<>();
+        List<UserDTO> allUserDTOs = new ArrayList<>();
         userRepository.findAll()
-                .forEach(user -> allDTOs.add(new UserDTO(user)));
-        return allDTOs;
+                .forEach(user -> allUserDTOs.add(new UserDTO(user)));
+        return allUserDTOs;
     }
 
     @GetMapping("/users/{id}")

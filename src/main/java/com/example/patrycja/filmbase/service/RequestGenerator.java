@@ -13,13 +13,13 @@ public class RequestGenerator {
 
     private final String filePath = "Films";
     private final FileLinesReader fileLinesReader;
-    private List<AddFilmRequest> requestList;
-    private List<AddActorRequest> actorList;
+    private List<AddFilmRequest> filmRequests;
+    private List<AddActorRequest> actorRequests;
     private long count;
 
     public RequestGenerator() {
-        requestList = new ArrayList<>();
-        actorList = new ArrayList<>();
+        filmRequests = new ArrayList<>();
+        actorRequests = new ArrayList<>();
         fileLinesReader = new FileLinesReader(filePath);
 
         for (String lineDivider : fileLinesReader.getLines()) {
@@ -38,13 +38,13 @@ public class RequestGenerator {
                         .AddActorRequestBuilder(separatedNames[0],
                         separatedNames[1])
                         .build());
-                actorList.add(new AddActorRequest
+                actorRequests.add(new AddActorRequest
                         .AddActorRequestBuilder(separatedNames[0],
                         separatedNames[1])
                         .build());
             }
 
-            requestList.add(new AddFilmRequest
+            filmRequests.add(new AddFilmRequest
                     .AddFilmRequestBuilder(content[0])
                     .types(typeList)
                     .productionYear(Integer.parseInt(content[4]))
@@ -54,11 +54,11 @@ public class RequestGenerator {
         }
         ;
 
-        count = requestList.size();
+        count = filmRequests.size();
     }
 
     public AddFilmRequest getRequest(int index) {
-        return requestList.get(index);
+        return filmRequests.get(index);
     }
 
     public long getCount() {
@@ -66,6 +66,6 @@ public class RequestGenerator {
     }
 
     public AddActorRequest getActor(int index) {
-        return actorList.get(index);
+        return actorRequests.get(index);
     }
 }

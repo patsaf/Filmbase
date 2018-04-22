@@ -38,10 +38,10 @@ public class DirectorController {
 
     @GetMapping("/directors")
     public List<DirectorDTO> findAllDirectors() {
-        List<DirectorDTO> directorDTOs = new ArrayList<>();
+        List<DirectorDTO> allDirectorDTOs = new ArrayList<>();
         directorRepository.findAll()
-                .forEach(director -> directorDTOs.add(new DirectorDTO(director)));
-        return directorDTOs;
+                .forEach(director -> allDirectorDTOs.add(new DirectorDTO(director)));
+        return allDirectorDTOs;
     }
 
     @GetMapping("/directors/{id}")
@@ -75,12 +75,10 @@ public class DirectorController {
 
         if (action.equalsIgnoreCase("favourite")) {
 
-            if (user.getFavDirectors().contains(director)) {
+            if (user.checkIfFavDirectorsContainActor(director)) {
                 throw new DuplicateException("This director is already on your list!");
             }
-            user
-                    .getFavDirectors()
-                    .add(director);
+            user.addFavDirector(director);
             userRepository.save(user);
             return new DirectorDTO(director);
 
@@ -89,16 +87,12 @@ public class DirectorController {
             try {
                 if ((rating < 0) || (rating > 10)) {
                     throw new InvalidParamException("Your rating must fall between 0 and 10!");
-                } else if (user
-                        .getRatedDirectors()
-                        .containsKey(director.getId())) {
+                } else if (user.checkIfDirectorAlreadyRated(director)) {
                     throw new DuplicateException("You've already rated this director!");
                 }
                 director.rate(rating);
                 directorRepository.save(director);
-                user
-                        .getRatedDirectors()
-                        .put(director.getId(), rating);
+                user.addRatedDirector(director.getId(), rating);
                 userRepository.save(user);
                 return new DirectorDTO(director);
             } catch (NullPointerException ex) {
@@ -107,7 +101,7 @@ public class DirectorController {
 
         } else if (action.equalsIgnoreCase("update")) {
 
-            if (director.getDateOfBirth() != null) {
+            if (director.hasDateOfBirth()) {
                 throw new AlreadyUpToDateException("All director's data is up to date!");
             }
             try {

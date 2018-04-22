@@ -48,31 +48,19 @@ public class FilmController {
         FilmGenerator filmGenerator = new FilmGenerator();
         for (int i = 0; i < filmGenerator.getCount(); i++) {
             Director director = directorRepository.findByFirstNameAndLastName(
-                    filmGenerator
-                            .getFilm(i)
-                            .getDirector()
-                            .getFirstName(),
-                    filmGenerator
-                            .getFilm(i)
-                            .getDirector()
-                            .getLastName());
-
+                    filmGenerator.getDirectorFirstName(i),
+                    filmGenerator.getDirectorLastName(i));
             if (director == null) {
-                directorRepository.save(filmGenerator.getFilm(i)
-                        .getDirector());
+                directorRepository.save(filmGenerator.getDirector(i));
             }
 
-            List<Actor> cast = filmGenerator.getFilm(i).getCast();
+            List<Actor> cast = filmGenerator.getFilmCast(i);
             for (int j = 0; j < cast.size(); j++) {
                 Actor actor = actorRepository.findByFirstNameAndLastName(
-                        cast
-                                .get(j)
-                                .getFirstName(),
-                        cast
-                                .get(j)
-                                .getLastName());
+                        filmGenerator.getActorFromCast(i, j).getFirstName(),
+                        filmGenerator.getActorFromCast(i, j).getLastName());
                 if (actor == null) {
-                    actorRepository.save(cast.get(j));
+                    actorRepository.save(filmGenerator.getActorFromCast(i, j));
                 }
             }
             filmRepository.save(filmGenerator.getFilm(i));
@@ -81,10 +69,10 @@ public class FilmController {
 
     @GetMapping("/films")
     public List<FilmDTO> getAllFilms() {
-        List<FilmDTO> allDTOs = new ArrayList<>();
+        List<FilmDTO> allFilmDTOs = new ArrayList<>();
         filmRepository.findAll()
-                .forEach(film -> allDTOs.add(new FilmDTO(film)));
-        return allDTOs;
+                .forEach(film -> allFilmDTOs.add(new FilmDTO(film)));
+        return allFilmDTOs;
     }
 
     @PostMapping("/films")
@@ -165,36 +153,22 @@ public class FilmController {
 
         if (action.equalsIgnoreCase("favourite")) {
 
-            if (user
-                    .getFavFilms()
-                    .contains(film)) {
+            if (user.checkIfFavFilmsContainFilm(film)) {
                 throw new DuplicateException("This film is already on your list!");
-            } else if (user
-                    .getFilmWishlist()
-                    .contains(film)) {
-                user
-                        .getFilmWishlist()
-                        .remove(film);
+            } else if (user.checkIfFilmWishlistContainsFilm(film)) {
+                user.removeFilmFromWishlist(film);
             }
-            user
-                    .getFavFilms()
-                    .add(film);
+            user.addFavFilm(film);
             userRepository.save(user);
 
         } else if (action.equalsIgnoreCase("wishlist")) {
 
-            if (user
-                    .getFilmWishlist()
-                    .contains(film)) {
+            if (user.checkIfFilmWishlistContainsFilm(film)) {
                 throw new DuplicateException("This film is already on your list!");
-            } else if (user
-                    .getFavFilms()
-                    .contains(film)) {
+            } else if (user.checkIfFavFilmsContainFilm(film)) {
                 throw new DuplicateException("Seems like you've already seen this film!");
             }
-            user
-                    .getFilmWishlist()
-                    .add(film);
+            user.addFilmToWishlist(film);
             userRepository.save(user);
 
         } else if (action.equalsIgnoreCase("rate")) {
@@ -202,16 +176,12 @@ public class FilmController {
             try {
                 if ((rating < 0) || (rating > 10)) {
                     throw new InvalidParamException("Your rating must fall between 0 and 10!");
-                } else if (user
-                        .getRatedFilms()
-                        .containsKey(film.getId())) {
+                } else if (user.checkIfFilmAlreadyRated(film)) {
                     throw new DuplicateException("You've already rated this film!");
                 }
                 film.rate(rating);
                 filmRepository.save(film);
-                user
-                        .getRatedFilms()
-                        .put(film.getId(), rating);
+                user.addRatedFilm(film.getId(), rating);
                 userRepository.save(user);
             } catch (NullPointerException ex) {
                 throw new InvalidParamException("You need to insert your rating!");
@@ -241,16 +211,13 @@ public class FilmController {
 
             List<Actor> castById = filmRepository.getCastById(id);
             filmRepository.delete(film);
-            if (film
+            if (!film
                     .getDirector()
-                    .getFilms()
-                    .isEmpty()) {
+                    .hasAnyFilms()) {
                 directorRepository.delete(film.getDirector());
             }
             for (Actor actor : castById) {
-                if (actor
-                        .getFilms()
-                        .isEmpty()) {
+                if (!actor.hasAnyFilms()) {
                     actorRepository.delete(actor);
                 }
             }

@@ -14,11 +14,11 @@ public class FilmGenerator {
 
     private final String filePath = "Films";
     private final FileLinesReader fileLinesReader;
-    private List<Film> filmList;
+    private List<Film> films;
     private long count;
 
     public FilmGenerator() {
-        filmList = new ArrayList<>();
+        films = new ArrayList<>();
         fileLinesReader = new FileLinesReader(filePath);
 
         for (String lineDivider : fileLinesReader.getLines()) {
@@ -37,7 +37,7 @@ public class FilmGenerator {
                         .build());
             }
 
-            filmList.add(new Film.FilmBuilder(content[0])
+            films.add(new Film.FilmBuilder(content[0])
                     .director(new Director.DirectorBuilder(
                             content[1], content[2])
                             .build())
@@ -48,7 +48,7 @@ public class FilmGenerator {
             );
         }
 
-        count = filmList.size();
+        count = films.size();
     }
 
     public long getCount() {
@@ -56,6 +56,26 @@ public class FilmGenerator {
     }
 
     public Film getFilm(int index) {
-        return filmList.get(index);
+        return films.get(index);
+    }
+
+    public Director getDirector(int index) {
+        return getFilm(index).getDirector();
+    }
+
+    public String getDirectorFirstName(int index) {
+        return getDirector(index).getFirstName();
+    }
+
+    public String getDirectorLastName(int index) {
+        return getDirector(index).getLastName();
+    }
+
+    public List<Actor> getFilmCast(int index) {
+        return getFilm(index).getCast();
+    }
+
+    public Actor getActorFromCast(int index, int actorIndex) {
+        return getFilmCast(index).get(actorIndex);
     }
 }

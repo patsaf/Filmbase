@@ -54,6 +54,14 @@ public class Director {
         }
     }
 
+    public boolean hasDateOfBirth() {
+        return !(dateOfBirth==null);
+    }
+
+    public boolean hasAnyFilms() {
+        return !(films==null);
+    }
+
     public Boolean checkIfDataEquals(Director director) {
         return firstName.equals(director.getFirstName()) &&
                 lastName.equals(director.getLastName()) &&

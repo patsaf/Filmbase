@@ -32,10 +32,10 @@ public class FilmCastController {
             throw new InvalidIdException();
         }
 
-        List<ActorDTO> actorDTOS = new ArrayList<>();
+        List<ActorDTO> actorDTOs = new ArrayList<>();
         film.getCast()
-                .forEach(actor -> actorDTOS.add(new ActorDTO(actor)));
-        return actorDTOS;
+                .forEach(actor -> actorDTOs.add(new ActorDTO(actor)));
+        return actorDTOs;
     }
 
     @PostMapping("/films/{id}/cast")
@@ -66,13 +66,12 @@ public class FilmCastController {
             throw new DuplicateException("Actor already in cast!");
         }
         actorRepository.save(actor);
-        List<Actor> cast = film.getCast();
-        cast.add(actor);
+        film.addActorToCast(actor);
         filmRepository.save(film);
-        List<ActorDTO> actorDTOS = new ArrayList<>();
-        for (Actor actor1 : cast) {
-            actorDTOS.add(new ActorDTO(actor1));
+        List<ActorDTO> actorDTOs = new ArrayList<>();
+        for (Actor actor1 : film.getCast()) {
+            actorDTOs.add(new ActorDTO(actor1));
         }
-        return actorDTOS;
+        return actorDTOs;
     }
 }

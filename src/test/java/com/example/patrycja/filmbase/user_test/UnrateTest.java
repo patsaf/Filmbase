@@ -78,7 +78,7 @@ public class UnrateTest extends FillBaseTemplate {
 
         MvcResult mvcResult1 = this.mockMvc.perform(delete("/users/{id}/rates", 1)
                 .param("type", "film")
-                .param("item", "1"))
+                .param("itemId", "1"))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -107,7 +107,7 @@ public class UnrateTest extends FillBaseTemplate {
 
         MvcResult mvcResult1 = this.mockMvc.perform(delete("/users/{id}/rates", 1)
                 .param("type", "actor")
-                .param("item", "1"))
+                .param("itemId", "1"))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -136,7 +136,7 @@ public class UnrateTest extends FillBaseTemplate {
 
         MvcResult mvcResult1 = this.mockMvc.perform(delete("/users/{id}/rates", 1)
                 .param("type", "director")
-                .param("item", "1"))
+                .param("itemId", "1"))
                 .andExpect(status().isOk())
                 .andReturn();
 

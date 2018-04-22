@@ -46,7 +46,7 @@ public class UserFavouritesController {
     @DeleteMapping("/users/{id}/favourites")
     public HttpEntity<FavouritesDTO> deleteFavourite(@PathVariable("id") long id,
                                                      @RequestParam("action") String action,
-                                                     @RequestParam("item") long itemid) {
+                                                     @RequestParam("item") long itemId) {
         Object principal = SecurityContextHolder
                 .getContext()
                 .getAuthentication()
@@ -65,10 +65,8 @@ public class UserFavouritesController {
 
                 if (user.getFavFilms()
                         .stream()
-                        .anyMatch(film -> film.getId() == itemid)) {
-                    user
-                            .getFavFilms()
-                            .remove(filmRepository.findById(itemid));
+                        .anyMatch(film -> film.getId() == itemId)) {
+                    user.removeFavFilm(filmRepository.findById(itemId));
                 } else {
                     throw new InvalidParamException("This film isn't even on your list!");
                 }
@@ -78,10 +76,8 @@ public class UserFavouritesController {
                 if (user
                         .getFavActors()
                         .stream()
-                        .anyMatch(actor -> actor.getId() == itemid)) {
-                    user
-                            .getFavActors()
-                            .remove(actorRepository.findById(itemid));
+                        .anyMatch(actor -> actor.getId() == itemId)) {
+                    user.removeFavActor(actorRepository.findById(itemId));
                 } else {
                     throw new InvalidParamException("This actor isn't even on your list!");
                 }
@@ -91,10 +87,8 @@ public class UserFavouritesController {
                 if (user
                         .getFavDirectors()
                         .stream()
-                        .anyMatch(director -> director.getId() == itemid)) {
-                    user
-                            .getFavDirectors()
-                            .remove(directorRepository.findById(itemid));
+                        .anyMatch(director -> director.getId() == itemId)) {
+                    user.removeFavDirector(directorRepository.findById(itemId));
                 } else {
                     throw new InvalidParamException("This director isn't even on your list!");
                 }

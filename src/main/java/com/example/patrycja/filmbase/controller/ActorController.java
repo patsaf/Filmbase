@@ -39,10 +39,10 @@ public class ActorController {
 
     @GetMapping("/actors")
     public List<ActorDTO> findAllActors() {
-        List<ActorDTO> allDTOs = new ArrayList<>();
+        List<ActorDTO> allActorDTOs = new ArrayList<>();
         actorRepository.findAll()
-                .forEach(actor -> allDTOs.add(new ActorDTO(actor)));
-        return allDTOs;
+                .forEach(actor -> allActorDTOs.add(new ActorDTO(actor)));
+        return allActorDTOs;
     }
 
     @PostMapping("/actors")
@@ -112,12 +112,10 @@ public class ActorController {
 
         if (action.equalsIgnoreCase("favourite")) {
 
-            if (user.getFavActors().contains(actor)) {
+            if (user.checkIfFavActorsContainActor(actor)) {
                 throw new DuplicateException("This actor is already on your list!");
             }
-            user
-                    .getFavActors()
-                    .add(actor);
+            user.addFavActor(actor);
             userRepository.save(user);
             return new ActorDTO(actor);
 
@@ -126,14 +124,12 @@ public class ActorController {
             try {
                 if ((rating < 0) || (rating > 10)) {
                     throw new InvalidParamException("Your rating must fall between 0 and 10!");
-                } else if (user.getRatedActors().containsKey(actor.getId())) {
+                } else if (user.checkIfActorAlreadyRated(actor)) {
                     throw new DuplicateException("You've already rated this actor!");
                 }
                 actor.rate(rating);
                 actorRepository.save(actor);
-                user
-                        .getRatedActors()
-                        .put(actor.getId(), rating);
+                user.addRatedActor(actor.getId(), rating);
                 userRepository.save(user);
                 return new ActorDTO(actor);
             } catch (NullPointerException ex) {
@@ -142,7 +138,7 @@ public class ActorController {
 
         } else if (action.equalsIgnoreCase("update")) {
 
-            if (actor.getDateOfBirth() != null) {
+            if (actor.hasDateOfBirth()) {
                 throw new AlreadyUpToDateException("All actor data is up to date!");
             }
             try {

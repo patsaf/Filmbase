@@ -85,6 +85,90 @@ public class User implements UserDetails {
         return isAdmin;
     }
 
+    public void addFavActor(Actor actor) {
+        favActors.add(actor);
+    }
+
+    public void addFavDirector(Director director) {
+        favDirectors.add(director);
+    }
+
+    public void addFavFilm(Film film) {
+        favFilms.add(film);
+    }
+
+    public void addFilmToWishlist(Film film) {
+        filmWishlist.add(film);
+    }
+
+    public void removeFilmFromWishlist(Film film) {
+        filmWishlist.remove(film);
+    }
+
+    public void removeFavFilm(Film film) {
+        favFilms.remove(film);
+    }
+
+    public void removeFavActor(Actor actor) {
+        favActors.remove(actor);
+    }
+
+    public void removeFavDirector(Director director) {
+        favDirectors.remove(director);
+    }
+
+    public boolean checkIfFilmWishlistContainsFilm(Film film) {
+        return filmWishlist.contains(film);
+    }
+
+    public boolean checkIfFavFilmsContainFilm(Film film) {
+        return favFilms.contains(film);
+    }
+
+    public boolean checkIfFavActorsContainActor(Actor actor) {
+        return favActors.contains(actor);
+    }
+
+    public boolean checkIfFavDirectorsContainActor(Director director) {
+        return favDirectors.contains(director);
+    }
+
+    public boolean checkIfFilmAlreadyRated(Film film) {
+        return ratedFilms.containsKey(film.getId());
+    }
+
+    public boolean checkIfActorAlreadyRated(Actor actor) {
+        return ratedActors.containsKey(actor.getId());
+    }
+
+    public boolean checkIfDirectorAlreadyRated(Director director) {
+        return ratedDirectors.containsKey(director.getId());
+    }
+
+    public void addRatedFilm(long id, double rating) {
+        ratedFilms.put(id, rating);
+    }
+
+    public void addRatedActor(long id, double rating) {
+        ratedActors.put(id, rating);
+    }
+
+    public void addRatedDirector(long id, double rating) {
+        ratedDirectors.put(id, rating);
+    }
+
+    public void removeRatedFilm(long id) {
+        ratedFilms.remove(id);
+    }
+
+    public void removeRatedActor(long id) {
+        ratedActors.remove(id);
+    }
+
+    public void removeRatedDirector(long id) {
+        ratedDirectors.remove(id);
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (isAdmin) {

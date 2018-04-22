@@ -52,7 +52,7 @@ public class UserRatesController {
     @DeleteMapping("/users/{id}/rates")
     public HttpEntity<RatesDTO> cancelRating(@PathVariable("id") long id,
                                              @RequestParam("type") String type,
-                                             @RequestParam("item") long item) {
+                                             @RequestParam("itemId") long itemId) {
         Object principal = SecurityContextHolder
                 .getContext()
                 .getAuthentication()
@@ -69,48 +69,38 @@ public class UserRatesController {
         }
 
         if (type.equalsIgnoreCase("film")) {
-            if (!user
-                    .getRatedFilms()
-                    .containsKey(item)) {
+            if (!user.checkIfFilmAlreadyRated(filmRepository.findById(itemId))) {
                 throw new InvalidParamException("You haven't rated this film!");
             }
-            Film film = filmRepository.findById(item);
+            Film film = filmRepository.findById(itemId);
             film
                     .unrate(user
                             .getRatedFilms()
-                            .get(item));
+                            .get(itemId));
             filmRepository.save(film);
-            user
-                    .getRatedFilms()
-                    .remove(item);
+            user.removeRatedFilm(itemId);
         } else if (type.equalsIgnoreCase("actor")) {
-            if (!user.getRatedActors().containsKey(item)) {
+            if (!user.checkIfActorAlreadyRated(actorRepository.findById(itemId))) {
                 throw new InvalidParamException("You haven't rated this actor!");
             }
-            Actor actor = actorRepository.findById(item);
+            Actor actor = actorRepository.findById(itemId);
             actor
                     .unrate(user
                             .getRatedActors()
-                            .get(item));
+                            .get(itemId));
             actorRepository.save(actor);
-            user
-                    .getRatedActors()
-                    .remove(item);
+            user.removeRatedActor(itemId);
         } else if (type.equalsIgnoreCase("director")) {
-            if (!user
-                    .getRatedDirectors()
-                    .containsKey(item)) {
+            if (!user.checkIfDirectorAlreadyRated(directorRepository.findById(itemId))) {
                 throw new InvalidParamException("You haven't rated this director!");
             }
-            Director director = directorRepository.findById(item);
+            Director director = directorRepository.findById(itemId);
             director
                     .unrate(user
                             .getRatedDirectors()
-                            .get(item));
+                            .get(itemId));
             directorRepository.save(director);
-            user
-                    .getRatedDirectors()
-                    .remove(item);
+            user.removeRatedDirector(itemId);
         } else {
             throw new InvalidParamException("Invalid argument!");
         }
@@ -119,8 +109,8 @@ public class UserRatesController {
     }
 
     private RatesDTO createRatesToDisplay(User user) {
-        List<MapActorItemDTO> actorDTOList = new ArrayList<>();
-        List<MapDirectorItemDTO> directorDTOList = new ArrayList<>();
+        List<MapActorItemDTO> ratedActors = new ArrayList<>();
+        List<MapDirectorItemDTO> ratedDirectors = new ArrayList<>();
         List<MapFilmItemDTO> filmDTOList = new ArrayList<>();
 
         for (Long key : user
@@ -137,7 +127,7 @@ public class UserRatesController {
         for (Long key : user
                 .getRatedActors()
                 .keySet()) {
-            actorDTOList.add(new MapActorItemDTO(
+            ratedActors.add(new MapActorItemDTO(
                     actorRepository.findById(key),
                     user
                             .getRatedActors()
@@ -148,13 +138,13 @@ public class UserRatesController {
         for (Long key : user
                 .getRatedDirectors()
                 .keySet()) {
-            directorDTOList.add(new MapDirectorItemDTO(
+            ratedDirectors.add(new MapDirectorItemDTO(
                     directorRepository.findById(key),
                     user
                             .getRatedDirectors()
                             .get(key)
             ));
         }
-        return new RatesDTO(actorDTOList, directorDTOList, filmDTOList);
+        return new RatesDTO(ratedActors, ratedDirectors, filmDTOList);
     }
 }
